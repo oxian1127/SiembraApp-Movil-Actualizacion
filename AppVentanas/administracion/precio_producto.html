@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Precio de Venta</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+            --secondary-gradient: linear-gradient(135deg, #2c9e45 0%, #38bc57 100%);
+            --bg-color: #f0f4f1;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            min-height: 100vh;
+            padding-bottom: 50px;
+        }
+
+        /* Header */
+        .header-custom {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 30px rgba(20, 98, 21, 0.2);
+            margin-bottom: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-custom h1 {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* Cards */
+        .card {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 25px;
+            padding: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-weight: 700;
+            color: #146215;
+            margin-bottom: 20px;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 20px;
+            border: 1px solid #dfe6e9;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1.05rem;
+            background: white;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2c9e45;
+            box-shadow: 0 0 0 4px rgba(44, 158, 69, 0.1);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 25px;
+            border-radius: 18px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(20, 98, 21, 0.2);
+            gap: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(20, 98, 21, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #146215;
+            border: 1px solid #dfe6e9;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .btn-margin-pills {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .btn-margin {
+            flex: 1;
+            padding: 10px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #dfe6e9;
+            color: #146215;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-margin:hover {
+            background: #e9f7ef;
+            border-color: #2c9e45;
+        }
+
+        /* History Items */
+        .history-item {
+            background: white;
+            padding: 18px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            border: 1px solid #f1f5f9;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .history-item:hover {
+            border-color: #2c9e45;
+            transform: translateX(5px);
+        }
+
+        .history-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .history-value {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .history-price {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--success);
+        }
+
+        /* Utils */
+        .text-center {
+            text-align: center;
+        }
+
+        .text-success {
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        .mt-4 {
+            margin-top: 25px;
+        }
+
+        .mb-3 {
+            margin-bottom: 15px;
+        }
+
+        .w-100 {
+            width: 100%;
+        }
+
+        /* Menu Button */
+        .menu-button-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .menu-pill-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 35px;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(20, 98, 21, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .menu-pill-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(20, 98, 21, 0.4);
+        }
+
+        /* Navigation Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 480px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .menu-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .menu-btn:hover {
+            background: white;
+            transform: translateY(-3px);
+            border-color: #2c9e45;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .menu-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .menu-title {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .menu-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.2;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px 20px;
+            border-top-left-radius: 35px;
+            border-top-right-radius: 35px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #146215;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-close-modal {
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Alert Modal Layout */
+        .modal-alert-content {
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .alert-icon {
+            width: 70px;
+            height: 70px;
+            background: #e9f7ef;
+            color: #146215;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 20px;
+        }
+
+        .alert-icon.error {
+            background: #fee2e2;
+            color: var(--danger);
+        }
+
+        .alert-icon.warning {
+            background: #fef3c7;
+            color: var(--warning);
+        }
+
+        .alert-title {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 10px;
+        }
+
+        .alert-message {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.5;
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+
+<body>
+    <header class="header-custom">
+        <h1><i class="fas fa-coins"></i> Precio de Venta</h1>
+    </header>
+
+    <div class="container">
+        <!-- Formulario -->
+        <div class="card">
+            <h3><i class="fas fa-tag"></i> Calcular Precio</h3>
+            <form id="calculator-form" onsubmit="event.preventDefault(); calcularPrecioVenta();">
+                <div class="form-group">
+                    <label>Costo de Producción por Unidad</label>
+                    <input type="number" id="costo-produccion" placeholder="0.00" min="0" step="0.01" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Margen de Utilidad Deseado (%)</label>
+                    <div class="btn-margin-pills">
+                        <button type="button" class="btn-margin" onclick="setMargin(10)">10%</button>
+                        <button type="button" class="btn-margin" onclick="setMargin(20)">20%</button>
+                        <button type="button" class="btn-margin" onclick="setMargin(30)">30%</button>
+                    </div>
+                    <input type="number" id="margen-utilidad" placeholder="Ej. 25" min="0" max="100" step="0.1"
+                        required>
+                </div>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-calculator"></i> Calcular Precio Recomendado
+                </button>
+            </form>
+
+            <div id="resultado" class="mt-4 text-center"></div>
+        </div>
+
+        <!-- Historial -->
+        <div class="card">
+            <h3><i class="fas fa-history"></i> Historial de Cálculos</h3>
+            <div id="historial">
+                <p class="text-center" style="padding: 20px; color: var(--text-muted); font-size: 0.9rem;">
+                    No hay cálculos realizados aún
+                </p>
+            </div>
+
+            <div class="mt-4" style="display: flex; gap: 10px;">
+                <button id="export-text" class="btn btn-secondary" onclick="exportarYCompartirTexto()" style="flex: 1;">
+                    <i class="fab fa-whatsapp"></i> Compartir
+                </button>
+                <button id="export-json" class="btn btn-secondary" onclick="exportarJSON()" style="flex: 1;">
+                    <i class="fas fa-file-code"></i> JSON
+                </button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Menu Button -->
+    <div class="menu-button-container">
+        <button class="menu-pill-btn" onclick="openModal('modal-nav-menu')">
+            <i class="fas fa-bars"></i> MENÚ
+        </button>
+    </div>
+
+    <!-- Navigation Menu Modal -->
+    <div id="modal-nav-menu" class="modal-overlay" onclick="closeModal('modal-nav-menu', event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-compass"></i> Opciones de Navegación</div>
+                <button class="btn-close-modal" onclick="closeModal('modal-nav-menu')"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-grid">
+                <a href="go:cig" class="menu-btn" style="border-left: 5px solid #2c9e45;">
+                    <div class="menu-icon"><i class="fas fa-chart-pie" style="color: #2c9e45;"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Control Financiero</span>
+                        <span class="menu-desc">Gastos, préstamos y banco</span>
+                    </div>
+                </a>
+
+                <a href="go:mujer_menu" class="menu-btn" style="border-left: 5px solid var(--danger);">
+                    <div class="menu-icon"><i class="fas fa-users" style="color: var(--danger);"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Mujeres Ahorradoras</span>
+                        <span class="menu-desc">Gestión del grupo</span>
+                    </div>
+                </a>
+
+                <a href="go:licencias" class="menu-btn" style="border-left: 5px solid #64748b;">
+                    <div class="menu-icon"><i class="fas fa-file-contract" style="color: #64748b;"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Licencias</span>
+                        <span class="menu-desc">Código abierto</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <!-- Alert Modal -->
+    <div id="modal-alert" class="modal-overlay" onclick="closeModal('modal-alert', event)">
+        <div class="modal-content"
+            style="max-width: 400px; align-self: center; border-radius: 35px; transform: scale(0.9);">
+            <div class="modal-alert-content">
+                <div id="alert-icon-container" class="alert-icon">
+                    <i id="alert-icon" class="fas fa-check"></i>
+                </div>
+                <div id="alert-title" class="alert-title">Mensaje</div>
+                <p id="alert-message" class="alert-message">Esto es un mensaje de alerta.</p>
+                <button class="btn" onclick="closeModal('modal-alert')">Entendido</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal & Navigation Utils
+        const openModal = (id) => {
+            document.getElementById(id).classList.add('active');
+        };
+
+        const closeModal = (id, event) => {
+            if (event && event.target !== document.getElementById(id)) return;
+            document.getElementById(id).classList.remove('active');
+        };
+
+        const navigate = (url) => {
+            window.location.href = url;
+        };
+
+        const formatMoney = (amount) => {
+            return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+        };
+
+        let historyData = [];
+
+        // Persistencia Local
+        const saveHistory = () => {
+            localStorage.setItem('siembra_precios_historial', JSON.stringify(historyData));
+        };
+
+        const loadHistory = () => {
+            const saved = localStorage.getItem('siembra_precios_historial');
+            if (saved) {
+                historyData = JSON.parse(saved);
+            }
+        };
+
+        // Custom Alert Logic
+        function showAlert(title, message, type = 'success') {
+            const modal = document.getElementById('modal-alert');
+            const iconContainer = document.getElementById('alert-icon-container');
+            const icon = document.getElementById('alert-icon');
+
+            // Set title and message
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-message').innerText = message;
+
+            // Set type
+            iconContainer.className = 'alert-icon ' + (type === 'error' ? 'error' : (type === 'warning' ? 'warning' : ''));
+            icon.className = 'fas ' + (type === 'error' ? 'fa-exclamation-circle' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-check'));
+
+            openModal('modal-alert');
+        }
+
+        // Función para establecer el margen de utilidad desde los botones
+        function setMargin(margin) {
+            document.getElementById("margen-utilidad").value = margin;
+        }
+
+        // Función para calcular el precio de venta
+        function calcularPrecioVenta() {
+            const costoProduccion = parseFloat(document.getElementById("costo-produccion").value);
+            const margenUtilidad = parseFloat(document.getElementById("margen-utilidad").value);
+            const resultadoDiv = document.getElementById("resultado");
+
+            // Validar los campos
+            if (isNaN(costoProduccion) || costoProduccion <= 0) {
+                showAlert("Error", "Por favor, ingrese un costo de producción válido.", "error");
+                resultadoDiv.innerHTML = `<span style="color:var(--danger)">Costo inválido.</span>`;
+                return;
+            }
+            if (isNaN(margenUtilidad) || margenUtilidad < 0 || margenUtilidad >= 100) {
+                showAlert("Error", "El margen de utilidad debe estar entre 0 y 99%.", "error");
+                resultadoDiv.innerHTML = `<span style="color:var(--danger)">Margen inválido.</span>`;
+                return;
+            }
+
+            const precioVenta = costoProduccion / (1 - margenUtilidad / 100);
+
+            // Mostrar el resultado
+            resultadoDiv.innerHTML = `
+                <div style="background: #e6f7ec; padding: 20px; border-radius: 20px; border: 1px solid #c6f6d5; animation: fadeIn 0.4s ease;">
+                    <div style="font-size: 0.9rem; color: #065f46; font-weight: 600; margin-bottom: 5px;">Precio Sugerido</div>
+                    <div style="font-size: 1.8rem; font-weight: 800; color: #146215;">${formatMoney(precioVenta)}</div>
+                </div>
+            `;
+
+            // Agregar al historial
+            agregarAlHistorial(costoProduccion, margenUtilidad, precioVenta);
+        }
+
+        // Función para agregar un cálculo al historial
+        function agregarAlHistorial(costo, margen, precio) {
+            const historial = document.getElementById("historial");
+            const date = new Date().toLocaleString();
+
+            const calcObject = {
+                id: Date.now(),
+                fecha: date,
+                costo: costo,
+                margen: margen,
+                precioVenta: precio
+            };
+
+            // Update historyData array (keep last 10)
+            historyData.unshift(calcObject);
+            if (historyData.length > 10) {
+                historyData.pop();
+            }
+
+            // Save to localStorage
+            saveHistory();
+
+            // Re-render history list
+            renderHistoryList();
+        }
+
+        function renderHistoryList() {
+            const historial = document.getElementById("historial");
+            historial.innerHTML = "";
+
+            if (historyData.length === 0) {
+                historial.innerHTML = `<p class="text-center" style="padding: 20px; color: var(--text-muted); font-size: 0.9rem;">No hay cálculos realizados aún</p>`;
+                return;
+            }
+
+            historyData.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "history-item";
+                div.innerHTML = `
+                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 5px;">${item.fecha}</div>
+                    <div class="history-row">
+                        <span class="history-label"><i class="fas fa-box-open"></i> Costo:</span>
+                        <span class="history-value">${formatMoney(item.costo)}</span>
+                    </div>
+                    <div class="history-row">
+                        <span class="history-label"><i class="fas fa-chart-line"></i> Margen:</span>
+                        <span class="history-value">${item.margen.toFixed(1)}%</span>
+                    </div>
+                    <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 8px 0;">
+                    <div class="history-row">
+                        <span class="history-label" style="font-weight: 700; color: var(--text-main);">P. Venta:</span>
+                        <span class="history-price">${formatMoney(item.precioVenta)}</span>
+                    </div>
+                `;
+                historial.appendChild(div);
+            });
+        }
+
+        // Función para exportar el historial a un archivo JSON
+        function exportarJSON() {
+            if (historyData.length === 0) {
+                showAlert("Aviso", "No hay cálculos en el historial para exportar.", "warning");
+                return;
+            }
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(historyData, null, 4));
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", dataStr);
+            downloadAnchorNode.setAttribute("download", "SiembraApp_Historial_Precios.json");
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+
+            showAlert("Éxito", "El archivo JSON se ha descargado correctamente.");
+        }
+
+        // Función para exportar el historial a un archivo PDF
+        async function exportarPDF() {
+            if (historyData.length === 0) {
+                showAlert("Aviso", "No hay cálculos para generar el PDF.", "warning");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(16);
+            pdf.text("Historial de Cálculos Realizados", 10, 10);
+
+            let y = 20;
+
+            historyData.forEach((item, index) => {
+                pdf.setFontSize(12);
+                pdf.text(`${index + 1}. Costo: ${formatMoney(item.costo)}`, 10, y);
+                pdf.text(`   Margen: ${item.margen.toFixed(1)}%`, 10, y + 5);
+                pdf.text(`   Precio de Venta: ${formatMoney(item.precioVenta)}`, 10, y + 10);
+                y += 20;
+            });
+
+            // Firma de SiembraApp Móvil
+            pdf.setFontSize(10);
+            pdf.text("Generado por SiembraApp Móvil", 10, y + 10);
+
+            // Agregar fecha y hora de generación del reporte
+            const date = new Date();
+            pdf.text(`Fecha y hora de generación: ${date.toLocaleString()}`, 10, y + 20);
+
+            // Descargar el archivo PDF
+            try {
+                const pdfBlob = pdf.output("blob");
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+
+                const link = document.createElement("a");
+                link.href = pdfUrl;
+                link.download = "Historial_Calculos_SiembraApp.pdf";
+
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+
+                URL.revokeObjectURL(pdfUrl);
+                showAlert("Éxito", "El PDF se generó correctamente.");
+            } catch (error) {
+                showAlert("Error", "Hubo un problema al generar el PDF.", "error");
+            }
+        }
+
+        // Función para exportar el historial y compartirlo por WhatsApp
+        async function exportarYCompartirPDF() {
+            if (historyData.length === 0) {
+                showAlert("Aviso", "No hay cálculos para compartir.", "warning");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(16);
+            pdf.text("Historial de Cálculos Realizados", 10, 10);
+
+            let y = 20;
+            historyData.forEach((item, index) => {
+                pdf.setFontSize(12);
+                pdf.text(`${index + 1}. Costo: ${formatMoney(item.costo)}`, 10, y);
+                pdf.text(`   Margen: ${item.margen.toFixed(1)}%`, 10, y + 5);
+                pdf.text(`   Precio de Venta: ${formatMoney(item.precioVenta)}`, 10, y + 10);
+                y += 20;
+            });
+
+            const date = new Date();
+            pdf.setFontSize(10);
+            pdf.text("Generado por SiembraApp Móvil", 10, y + 10);
+            pdf.text(`Fecha y hora de generación: ${date.toLocaleString()}`, 10, y + 20);
+
+            try {
+                const pdfBlob = pdf.output("blob");
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+
+                const mensaje = encodeURIComponent(
+                    "Hola, aquí tienes el historial de cálculos generado por SiembraApp Móvil. Descarga el archivo PDF desde el siguiente enlace:"
+                );
+                const whatsappUrl = `https://wa.me/?text=${mensaje}%0A${pdfUrl}`;
+
+                window.open(whatsappUrl, "_blank");
+                URL.revokeObjectURL(pdfUrl);
+            } catch (error) {
+                showAlert("Error", "Hubo un problema al generar el PDF.", "error");
+            }
+        }
+
+        // Función para exportar el historial y compartirlo como texto
+        function exportarYCompartirTexto() {
+            if (historyData.length === 0) {
+                showAlert("Aviso", "No hay cálculos para compartir.", "warning");
+                return;
+            }
+
+            // Generar el texto del historial
+            let textoHistorial = "Historial de Cálculos Realizados:\n\n";
+            historyData.forEach((item, index) => {
+                textoHistorial += `${index + 1}. Costo: ${formatMoney(item.costo)} - Margen: ${item.margen.toFixed(1)}%\n   Precio Recomendado: ${formatMoney(item.precioVenta)}\n\n`;
+            });
+
+            // Agregar firma y fecha/hora
+            const date = new Date();
+            textoHistorial += `Generado por SiembraApp Móvil\nFecha y hora de generación: ${date.toLocaleString()}`;
+
+            const mensaje = encodeURIComponent(textoHistorial);
+            const compartirUrl = `https://wa.me/?text=${mensaje}`;
+
+            window.open(compartirUrl, "_blank");
+        }
+
+        // Initialize history list
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+            renderHistoryList();
+        });
+    </script>
+
+    <footer class="text-center mt-4">
+        <p class="text-muted">Desarrollado por José Ibáñez © 2025</p>
+    </footer>
+</body>
+
+</html>

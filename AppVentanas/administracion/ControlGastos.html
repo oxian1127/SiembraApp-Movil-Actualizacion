@@ -1,0 +1,1957 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Gastos Personal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+            --secondary-gradient: linear-gradient(135deg, #2c9e45 0%, #38bc57 100%);
+            --bg-color: #f0f4f1;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --radius: 20px;
+
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding-bottom: 100px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header-custom {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 30px rgba(20, 98, 21, 0.2);
+            margin-bottom: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-custom h1 {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        /* Menu Button */
+        .menu-button-container {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
+        .menu-pill-btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 14px 35px;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            box-shadow: 0 10px 25px rgba(20, 98, 21, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .menu-pill-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(20, 98, 21, 0.4);
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Sections */
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Cards */
+        .card {
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-soft);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            padding: 25px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h3 {
+            font-weight: 700;
+            color: #146215;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px 15px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+            text-align: center;
+            border: 1px solid #f1f5f9;
+            transition: var(--transition);
+        }
+
+        .stat-card.balance {
+            border-top: 4px solid #2c9e45;
+        }
+
+        .stat-card.expense {
+            border-top: 4px solid var(--danger);
+        }
+
+        .stat-card.loan {
+            border-top: 4px solid var(--warning);
+        }
+
+        .stat-card.debt {
+            border-top: 4px solid #64748b;
+        }
+
+        .stat-card.owed {
+            border-top: 4px solid var(--success);
+        }
+
+        .stat-value {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-top: 8px;
+            color: #2d3436;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 25px;
+            border-radius: 18px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            transition: var(--transition);
+            box-shadow: 0 5px 15px rgba(20, 98, 21, 0.2);
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(20, 98, 21, 0.4);
+            filter: brightness(1.1);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #146215;
+            border: 1px solid #dfe6e9;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-warning {
+            background: var(--warning);
+        }
+
+        .btn-sm {
+            padding: 8px 15px;
+            font-size: 0.85rem;
+            border-radius: 12px;
+            width: auto;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px 18px;
+            border: 1px solid #dfe6e9;
+            border-radius: 15px;
+            font-family: inherit;
+            font-size: 1rem;
+            background: white;
+            transition: var(--transition);
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #2c9e45;
+            box-shadow: 0 0 0 4px rgba(44, 158, 69, 0.1);
+        }
+
+        /* List Items */
+        .list-item {
+            background: white;
+            padding: 18px;
+            border-radius: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #f1f5f9;
+            transition: var(--transition);
+        }
+
+        .list-item:hover {
+            border-color: #2c9e45;
+        }
+
+        .item-details {
+            flex-grow: 1;
+        }
+
+        .item-title {
+            font-weight: 700;
+            display: block;
+            color: var(--text-main);
+        }
+
+        .item-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .item-amount {
+            font-weight: 800;
+            font-size: 1.1rem;
+            margin-left: 1rem;
+            white-space: nowrap;
+        }
+
+        .amount-pos {
+            color: var(--success);
+        }
+
+        .amount-neg {
+            color: var(--danger);
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 0.5rem;
+        }
+
+        .badge-pending {
+            background: #fff4e5;
+            color: #b45309;
+        }
+
+        .badge-paid {
+            background: #e6f7ec;
+            color: #065f46;
+        }
+
+        .actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Utils */
+        .hidden {
+            display: none;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-4 {
+            margin-top: 25px;
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3000;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: rgba(45, 52, 54, 0.95);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            margin-bottom: 10px;
+            font-weight: 600;
+            animation: slideDown 0.4s forwards;
+            opacity: 0;
+        }
+
+        .toast.out {
+            animation: slideUp 0.3s forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+        }
+
+        /* Delete Button Animations */
+        .btn-confirm-delete {
+            background: #dc2626 !important;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px);
+            }
+
+            50% {
+                transform: translateX(5px);
+            }
+
+            75% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .list-item.deleting {
+            transition: all 0.4s ease-out;
+            opacity: 0;
+            transform: translateX(100%);
+            max-height: 0;
+            padding: 0;
+            margin: 0;
+            border: none;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-top-left-radius: 35px;
+            border-top-right-radius: 35px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .modal-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #146215;
+        }
+
+        .btn-close-modal {
+            background: #f1f5f9;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Custom spacing for fixed FAB area */
+        @media (max-width: 600px) {
+            .header-custom {
+                padding: 30px 15px;
+                border-bottom-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+            }
+
+            .modal-content {
+                padding: 25px 20px;
+            }
+        }
+
+        /* Navigation Menu Grid */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 480px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .menu-btn {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .menu-btn:hover {
+            background: white;
+            transform: translateY(-3px);
+            border-color: #2c9e45;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .menu-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .menu-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .menu-title {
+            font-weight: 700;
+            color: var(--text-main);
+            font-size: 0.95rem;
+        }
+
+        .menu-desc {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.2;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header-custom">
+        <h1><i class="fas fa-wallet me-2"></i> Mi Control de Finanzas</h1>
+    </header>
+
+    <div class="container">
+
+        <!-- Dashboard Section -->
+        <section id="dashboard" class="section active">
+            <div class="dashboard-grid">
+                <div class="stat-card balance">
+                    <div class="stat-label">Balance Final</div>
+                    <div class="stat-value" id="dash-final-balance">$0.00</div>
+                </div>
+                <div class="stat-card balance">
+                    <div class="stat-label">En Banco</div>
+                    <div class="stat-value" id="dash-bank-balance">$0.00</div>
+                </div>
+                <div class="stat-card expense">
+                    <div class="stat-label">Total Gastado</div>
+                    <div class="stat-value" id="dash-total-expenses">$0.00</div>
+                </div>
+                <div class="stat-card loan">
+                    <div class="stat-label">Me deben</div>
+                    <div class="stat-value" id="dash-loans-given">$0.00</div>
+                </div>
+                <div class="stat-card debt">
+                    <div class="stat-label">Yo debo</div>
+                    <div class="stat-value" id="dash-total-debt">$0.00</div>
+                </div>
+            </div>
+
+            <div class="card mt-4">
+                <h3><i class="fas fa-history"></i> Actividad Reciente</h3>
+                <div id="recent-activity-list">
+                    <p class="text-center" style="padding: 1rem; color: var(--text-muted);">Sin actividad reciente</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Expenses Section -->
+        <section id="expenses" class="section">
+            <div style="margin-bottom: 20px;">
+                <button onclick="app.openModal('modal-expense')" class="btn">
+                    <i class="fas fa-plus-circle"></i> Registrar Nuevo Gasto
+                </button>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-shopping-cart"></i> Historial de Gastos</h3>
+                <div id="expenses-list">
+                    <!-- List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Loans Section -->
+        <section id="loans" class="section">
+            <div style="margin-bottom: 20px;">
+                <button onclick="app.openModal('modal-loan')" class="btn">
+                    <i class="fas fa-hand-holding-usd"></i> Registrar Préstamo
+                </button>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-file-invoice-dollar"></i> Préstamos (Por Cobrar)</h3>
+                <div id="loans-list">
+                    <!-- List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Bank Section -->
+        <section id="bank" class="section">
+            <div class="stat-card balance" style="margin-bottom: 20px;">
+                <div class="stat-label">Saldo Actual en Banco</div>
+                <div class="stat-value" id="bank-view-balance">$0.00</div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button onclick="app.openModal('modal-bank')" class="btn">
+                    <i class="fas fa-exchange-alt"></i> Nuevo Movimiento
+                </button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-university"></i> Movimientos Bancarios</h3>
+                <div id="bank-list">
+                    <!-- List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Debts Section (New) -->
+        <section id="debts" class="section">
+            <div style="margin-bottom: 20px;">
+                <button onclick="app.openModal('modal-debt')" class="btn btn-warning">
+                    <i class="fas fa-exclamation-triangle"></i> Registrar Deuda
+                </button>
+            </div>
+            <div class="card">
+                <h3><i class="fas fa-receipt"></i> Deudas Pendientes (Por Pagar)</h3>
+                <div id="debts-list">
+                    <!-- List -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Settings/Config Section -->
+        <section id="settings" class="section">
+            <div class="card">
+                <h3><i class="fas fa-cog"></i> Configuración</h3>
+                <p style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.95rem;">
+                    Tus datos se guardan automáticamente en tu navegador. Usa estas herramientas para respaldar tu
+                    información de forma segura.
+                </p>
+
+                <div class="form-group" style="display: flex; flex-direction: column; gap: 12px;">
+                    <button onclick="app.exportData()" class="btn btn-secondary">
+                        <i class="fas fa-download"></i> Exportar a JSON
+                    </button>
+                    <button onclick="app.shareData()" class="btn">
+                        <i class="fas fa-share-alt"></i> Compartir Respaldo
+                    </button>
+                </div>
+
+                <div class="form-group">
+                    <label><i class="fas fa-upload"></i> Importar respaldo (JSON)</label>
+                    <input type="file" id="import-file" accept=".json" onchange="app.importData(this)">
+                </div>
+
+                <hr style="margin: 30px 0; border: 0; border-top: 1px solid #eee;">
+
+                <button id="btn-clear-data" onclick="app.requestClearData(this)" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Borrar todos los datos
+                </button>
+            </div>
+        </section>
+
+        <!-- Menu Button -->
+        <div class="menu-button-container">
+            <button class="menu-pill-btn" onclick="app.openModal('modal-nav-menu')">
+                <i class="fas fa-bars"></i> MENÚ
+            </button>
+        </div>
+
+        <!-- Toast Container -->
+        <div id="toast-container" class="toast-container"></div>
+
+        <!-- Modals -->
+        <!-- Expense Modal -->
+        <div id="modal-expense" class="modal-overlay" onclick="app.closeModal('modal-expense', event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="fas fa-shopping-cart"></i> Registrar Gasto</div>
+                    <button class="btn-close-modal" onclick="app.closeModal('modal-expense')"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="expense-form" onsubmit="event.preventDefault(); app.addExpense();">
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="exp-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Categoría</label>
+                        <select id="exp-category" required>
+                            <option value="Comida">Comida</option>
+                            <option value="Transporte">Transporte</option>
+                            <option value="Servicios">Servicios</option>
+                            <option value="Entretenimiento">Entretenimiento</option>
+                            <option value="Salud">Salud</option>
+                            <option value="Otros">Otros</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" id="exp-desc" placeholder="Ej. Almuerzo, Uber..." required>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto</label>
+                        <input type="number" id="exp-amount" step="0.01" min="0" placeholder="0.00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Medio de Pago</label>
+                        <select id="exp-method">
+                            <option value="Banco">Banco / Tarjeta</option>
+                            <option value="Efectivo">Efectivo</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">Guardar Gasto</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loan Modal -->
+        <div id="modal-loan" class="modal-overlay" onclick="app.closeModal('modal-loan', event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="fas fa-hand-holding-usd"></i> Registrar Préstamo</div>
+                    <button class="btn-close-modal" onclick="app.closeModal('modal-loan')"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="loan-form" onsubmit="event.preventDefault(); app.addLoan();">
+                    <div class="form-group">
+                        <label>A quién le presté</label>
+                        <input type="text" id="loan-person" placeholder="Nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fecha</label>
+                        <input type="date" id="loan-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto Prestado</label>
+                        <input type="number" id="loan-amount" step="0.01" min="0" required>
+                    </div>
+                    <button type="submit" class="btn">Registrar Préstamo</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Bank Modal -->
+        <div id="modal-bank" class="modal-overlay" onclick="app.closeModal('modal-bank', event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="fas fa-university"></i> Movimiento Bancario</div>
+                    <button class="btn-close-modal" onclick="app.closeModal('modal-bank')"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="bank-form" onsubmit="event.preventDefault(); app.addBankMovement();">
+                    <div class="form-group">
+                        <label>Tipo de Movimiento</label>
+                        <select id="bank-type">
+                            <option value="Ingreso">Ingreso (Depósito/Nómina)</option>
+                            <option value="Egreso">Egreso (Ajuste/Retiro)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Descripción</label>
+                        <input type="text" id="bank-desc" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Monto</label>
+                        <input type="number" id="bank-amount" step="0.01" min="0" required>
+                    </div>
+                    <button type="submit" class="btn">Registrar Movimiento</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Loan Payment Modal -->
+        <div id="modal-loan-payment" class="modal-overlay" onclick="app.closeModal('modal-loan-payment', event)">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-title"><i class="fas fa-money-bill-wave"></i> Abonar a Préstamo</div>
+                    <button class="btn-close-modal" onclick="app.closeModal('modal-loan-payment')"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <form id="loan-payment-form" onsubmit="event.preventDefault(); app.submitLoanPayment();">
+                    <p id="loan-payment-info"
+                        style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem; line-height: 1.4;"></p>
+                    <div class="form-group">
+                        <label>Monto a Abonar</label>
+                        <input type="number" id="loan-payment-amount" step="0.01" min="0" required>
+                    </div>
+                    <button type="submit" class="btn">Registrar Abono</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Debt Modal -->
+    <div id="modal-debt" class="modal-overlay" onclick="app.closeModal('modal-debt', event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-exclamation-circle text-warning"></i> Registrar Deuda</div>
+                <button class="btn-close-modal" onclick="app.closeModal('modal-debt')"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <form id="debt-form" onsubmit="event.preventDefault(); app.addDebt();">
+                <div class="form-group">
+                    <label>A quién le debo</label>
+                    <input type="text" id="debt-person" placeholder="Nombre (Banco, Persona...)" required>
+                </div>
+                <div class="form-group">
+                    <label>Fecha Límite / Fecha</label>
+                    <input type="date" id="debt-date" required>
+                </div>
+                <div class="form-group">
+                    <label>Monto de Deuda</label>
+                    <input type="number" id="debt-amount" step="0.01" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-warning">Registrar Deuda</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Debt Payment Modal -->
+    <div id="modal-debt-payment" class="modal-overlay" onclick="app.closeModal('modal-debt-payment', event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-hand-holding-usd"></i> Abonar a Deuda</div>
+                <button class="btn-close-modal" onclick="app.closeModal('modal-debt-payment')"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <form id="debt-payment-form" onsubmit="event.preventDefault(); app.submitDebtPayment();">
+                <p id="debt-payment-info" style="margin-bottom: 20px; color: var(--text-muted); font-size: 0.9rem;"></p>
+                <div class="form-group">
+                    <label>Monto a Pagar</label>
+                    <input type="number" id="debt-payment-amount" step="0.01" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-warning">Registrar Pago</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div id="modal-confirm-delete" class="modal-overlay" onclick="app.closeModal('modal-confirm-delete', event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" style="color: var(--danger)"><i class="fas fa-exclamation-triangle"></i> ¿Estás
+                    seguro?</div>
+                <button class="btn-close-modal" onclick="app.closeModal('modal-confirm-delete')"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div style="margin-bottom: 30px;">
+                <p>Esta acción no se puede deshacer. ¿Deseas eliminar este registro permanentemente?</p>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-secondary" onclick="app.closeModal('modal-confirm-delete')"
+                    style="flex: 1">Cancelar</button>
+                <button class="btn btn-danger" onclick="app.confirmDeleteAction()" style="flex: 1">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Settle Debt Modal -->
+    <div id="modal-confirm-settle" class="modal-overlay" onclick="app.closeModal('modal-confirm-settle', event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-check-circle"></i> Liquidar Deuda</div>
+                <button class="btn-close-modal" onclick="app.closeModal('modal-confirm-settle')"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div style="margin-bottom: 30px;">
+                <p id="settle-debt-info">¿Estás seguro de liquidar esta deuda?</p>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <button class="btn btn-secondary" onclick="app.closeModal('modal-confirm-settle')"
+                    style="flex: 1">Cancelar</button>
+                <button class="btn" style="flex: 1;" onclick="app.confirmSettleDebtAction()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    </div>
+
+    <!-- Navigation Menu Modal -->
+    <div id="modal-nav-menu" class="modal-overlay" onclick="app.closeModal('modal-nav-menu', event)">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title"><i class="fas fa-compass"></i> Opciones de Navegación</div>
+                <button class="btn-close-modal" onclick="app.closeModal('modal-nav-menu')"><i
+                        class="fas fa-times"></i></button>
+            </div>
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="app.navigate('dashboard')" style="border-left: 5px solid #2c9e45;">
+                    <div class="menu-icon"><i class="fas fa-chart-pie" style="color: #2c9e45;"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Resumen General</span>
+                        <span class="menu-desc">Vista de tus finanzas</span>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="app.navigate('expenses')"
+                    style="border-left: 5px solid var(--danger);">
+                    <div class="menu-icon"><i class="fas fa-shopping-bag" style="color: var(--danger);"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Control de Gastos</span>
+                        <span class="menu-desc">Registra tus compras</span>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="app.navigate('loans')" style="border-left: 5px solid #64748b;">
+                    <div class="menu-icon"><i class="fas fa-hand-holding-heart" style="color: #64748b;"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Mis Préstamos</span>
+                        <span class="menu-desc">Dinero que prestaste</span>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="app.navigate('bank')" style="border-left: 5px solid #146215;">
+                    <div class="menu-icon"><i class="fas fa-university" style="color: #146215;"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Cuenta Bancaria</span>
+                        <span class="menu-desc">Saldo y movimientos</span>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="app.navigate('debts')" style="border-left: 5px solid var(--warning);">
+                    <div class="menu-icon"><i class="fas fa-file-invoice" style="color: var(--warning);"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Deudas Pendientes</span>
+                        <span class="menu-desc">Lo que debes pagar</span>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="app.navigate('settings')" style="border-left: 5px solid #334155;">
+                    <div class="menu-icon"><i class="fas fa-user-cog" style="color: #334155;"></i></div>
+                    <div class="menu-info">
+                        <span class="menu-title">Herramientas</span>
+                        <span class="menu-desc">Respaldo y ajustes</span>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**
+         * Simple Single-File Finance App Logic
+         */
+        const app = (() => {
+            // --- State Management ---
+            const STORAGE_KEY = 'financeApp_data_v1';
+
+            let state = {
+                expenses: [],
+                loans: [],
+                bank: {
+                    initial: 0,
+                    movements: []
+                }
+            };
+
+            // --- Utils ---
+            const formatMoney = (amount) => {
+                return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount);
+            };
+
+            const generateId = () => Date.now().toString(36) + Math.random().toString(36).substr(2);
+
+            const getToday = () => new Date().toISOString().split('T')[0];
+
+            // --- Persistence ---
+            const loadState = () => {
+                const stored = localStorage.getItem(STORAGE_KEY);
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        // Merge/Validation could go here, simple override for now
+                        state = { ...state, ...parsed };
+
+                        // Ensure array structures exist if data is partial
+                        if (!state.expenses) state.expenses = [];
+                        if (!state.loans) state.loans = [];
+                        if (!state.debts) state.debts = [];
+                        if (!state.bank) state.bank = { initial: 0, movements: [] };
+
+                    } catch (e) {
+                        console.error("Error loading data", e);
+                    }
+                }
+            };
+
+            const saveState = () => {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+                render(); // Re-render on every save
+            };
+
+            // --- Core Logic & Calculations ---
+            const getBankBalance = () => {
+                let balance = state.bank.initial || 0;
+
+                // Add manual movements
+                state.bank.movements.forEach(m => {
+                    if (m.type === 'Ingreso') balance += m.amount;
+                    else balance -= m.amount;
+                });
+
+                // Subtract expenses paid via Bank
+                state.expenses.forEach(e => {
+                    if (e.method === 'Banco') balance -= e.amount;
+                });
+
+                return balance;
+            };
+
+            const getTotalExpenses = () => state.expenses.reduce((sum, e) => sum + e.amount, 0);
+
+            const getLoansGiven = () => state.loans.filter(l => l.status === 'Pendiente').reduce((sum, l) => sum + (l.amount - (l.paid || 0)), 0);
+
+            const getTotalDebt = () => {
+                let total = 0;
+                if (!state.debts) return 0;
+                state.debts.forEach(d => {
+                    if (d.status === 'Pendiente') {
+                        total += (d.amount - (d.paid || 0));
+                    }
+                });
+                return total;
+            };
+
+            // Balance Final = (Dinero real en banco + Dinero efectivo si se trackeara - pero solo piden estructura simple)
+            // Interpretación de usuario: Balance Final = saldo banco - gastos + pagos recibidos?
+            // User request: Balance final = saldo banco − gastos + pagos recibidos
+            // Nota: Si 'saldo banco' ya descuenta los gastos (al pagar con banco), no restamos dos veces.
+            // Asumiremos: Balance Final = Patrimonio actual disponible (Banco + Efectivo en billetera hipotética)
+            // O simplificando segun el prompt: 
+            // "Saldo banco = saldo inicial + ingresos − egresos" (Esto son movimientos bancarios puros)
+            // "Balance final = saldo banco − gastos + pagos recibidos"
+            // Esta logica implica que 'Saldo Banco' calculado arriba NO incluía gastos aun? 
+            // Vamos a ajustarnos a una logica contable sana:
+            // Saldo Banco Real = (Movimientos Ingreso - Movimientos Egreso) - Gastos pagados con Banco.
+            // Balance Total = Saldo Banco Real + (Efectivo disponible si hubiera).
+            // Si el usuario paga en efectivo, asumimos que sale de "la nada" o de una caja chica no registrada? 
+            // Para simplificar: Mostraremos Saldo Banco Efectivo y el Balance sera Saldo Banco.
+
+            // Re-leí el prompt: "Balance final = saldo banco − gastos + pagos recibidos"
+            // Esto es un poco ambiguo si el gasto ya se descontó del banco.
+            // Implementaré:
+            // Saldo Banco = Suma de movimientos 'Ingreso' en Banco - Movimientos 'Egreso' Manuales.
+            // Total Gastos hace que baje el dinero?
+            // Hagamos algo coherente:
+            // 1. Calculamos Saldo "Bruto" en Banco (Entradas - Salidas manuales).
+            // 2. Restamos Gastos marcados como 'Banco'.
+            // 3. Gastos en Efectivo no afectan Banco.
+
+            // Simplificación para UI: Mostraremos el Saldo Banco Calculado y Total Gastado Global.
+
+            // --- Toast Logic & Modal Logic ---
+            const showToast = (message) => {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = 'toast';
+                toast.innerText = message;
+                container.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.classList.add('out');
+                    toast.addEventListener('animationend', () => toast.remove());
+                }, 3000);
+            };
+
+            const openModal = (id, event) => {
+                document.getElementById(id).classList.add('active');
+            };
+
+            const closeModal = (id, event) => {
+                if (event && event.target !== event.currentTarget && event.target !== document.querySelector(`#${id} .btn-close-modal`)) return;
+
+                // Clear forms on close? user might want to persist data if accidentally closed.
+                // But for "Edit" flows we should reset if we cancel.
+                // For simplicity: close does not reset form unless it was an Edit cancel.
+
+                // If we are editing, we should probably reset the state if we close without saving.
+                // But let's check if we are just closing.
+
+                const modal = document.getElementById(id);
+                modal.classList.remove('active');
+
+                // Reset edit states if closing standardly
+                if (id === 'modal-expense' && editingId) cancelEdit();
+                if (id === 'modal-bank' && editingId) cancelBankEdit();
+            };
+
+            // --- Actions ---
+
+            let editingId = null;
+            let currentLoanPaymentId = null;
+            let currentDebtPaymentId = null;
+            let pendingDelete = null;
+            let pendingSettleId = null;
+
+            const addExpense = () => {
+                const date = document.getElementById('exp-date').value;
+                const category = document.getElementById('exp-category').value;
+                const desc = document.getElementById('exp-desc').value;
+                const amount = parseFloat(document.getElementById('exp-amount').value);
+                const method = document.getElementById('exp-method').value;
+
+                if (!date || !desc || isNaN(amount)) return;
+
+                if (editingId) {
+                    // Update existing
+                    const index = state.expenses.findIndex(e => e.id === editingId);
+                    if (index !== -1) {
+                        state.expenses[index] = { id: editingId, date, category, desc, amount, method };
+                        showToast('Gasto actualizado');
+                    }
+                    editingId = null;
+                    document.querySelector('#modal-expense .modal-title').innerText = 'Registrar Gasto';
+                    document.querySelector('#expense-form button[type="submit"]').innerText = 'Guardar Gasto';
+                } else {
+                    // Create new
+                    state.expenses.unshift({
+                        id: generateId(),
+                        date, category, desc, amount, method
+                    });
+                }
+
+                saveState();
+
+                // Close modal and Reset
+                closeModal('modal-expense');
+                document.getElementById('expense-form').reset();
+                document.getElementById('exp-date').value = getToday();
+                showToast(editingId ? 'Gasto actualizado' : 'Gasto registrado exitosamente');
+            };
+
+            const startEditExpense = (id) => {
+                const item = state.expenses.find(e => e.id === id);
+                if (!item) return;
+
+                editingId = id;
+                document.getElementById('exp-date').value = item.date;
+                document.getElementById('exp-category').value = item.category;
+                document.getElementById('exp-desc').value = item.desc;
+                document.getElementById('exp-amount').value = item.amount;
+                document.getElementById('exp-method').value = item.method;
+
+                // Update UI for Edit Mode
+                document.querySelector('#modal-expense .modal-title').innerText = 'Editar Gasto';
+                const btn = document.querySelector('#expense-form button[type="submit"]');
+                btn.innerText = 'Actualizar Gasto';
+
+                openModal('modal-expense');
+            };
+
+            const cancelEdit = () => {
+                editingId = null;
+                document.getElementById('expense-form').reset();
+                document.getElementById('exp-date').value = getToday();
+
+                document.querySelector('#modal-expense .modal-title').innerText = 'Registrar Gasto';
+                const btn = document.querySelector('#expense-form button[type="submit"]');
+                btn.innerText = 'Guardar Gasto';
+            };
+
+            const addLoan = () => {
+                const person = document.getElementById('loan-person').value;
+                const date = document.getElementById('loan-date').value;
+                const amount = parseFloat(document.getElementById('loan-amount').value);
+
+                if (!person || !date || isNaN(amount)) return;
+
+                state.loans.unshift({
+                    id: generateId(),
+                    person, date, amount,
+                    paid: 0,
+                    payments: [], // {date, amount}
+                    status: 'Pendiente'
+                });
+
+                saveState();
+                document.getElementById('loan-form').reset();
+                document.getElementById('loan-date').value = getToday();
+                closeModal('modal-loan');
+                showToast('Préstamo registrado');
+            };
+
+            const openLoanPaymentModal = (id) => {
+                const loan = state.loans.find(l => l.id === id);
+                if (!loan) return;
+
+                currentLoanPaymentId = id;
+                const remaining = loan.amount - (loan.paid || 0);
+
+                document.getElementById('loan-payment-info').innerText =
+                    `Préstamo a: ${loan.person}\nRestante: ${formatMoney(remaining)}`;
+
+                document.getElementById('loan-payment-amount').value = '';
+                document.getElementById('loan-payment-amount').max = remaining; // Optional hint
+
+                openModal('modal-loan-payment');
+                setTimeout(() => document.getElementById('loan-payment-amount').focus(), 100);
+            };
+
+            const submitLoanPayment = () => {
+                if (!currentLoanPaymentId) return;
+
+                const loan = state.loans.find(l => l.id === currentLoanPaymentId);
+                if (!loan) return;
+
+                const amount = parseFloat(document.getElementById('loan-payment-amount').value);
+                const remaining = loan.amount - (loan.paid || 0);
+
+                if (isNaN(amount) || amount <= 0) {
+                    showToast('Monto inválido');
+                    return;
+                }
+
+                if (amount > remaining + 0.01) { // Floating point tolerance
+                    showToast('El abono no puede superar la deuda');
+                    return;
+                }
+
+                loan.paid = (loan.paid || 0) + amount;
+                if (!loan.payments) loan.payments = [];
+                loan.payments.push({ date: getToday(), amount });
+
+                // Check if paid off
+                if (Math.abs(loan.amount - loan.paid) < 0.01) {
+                    loan.status = 'Pagado';
+                    loan.paidDate = getToday();
+                    showToast('¡Préstamo liquidado!');
+                } else {
+                    showToast('Abono registrado');
+                }
+
+                saveState();
+                closeModal('modal-loan-payment');
+                currentLoanPaymentId = null;
+            };
+
+            const markLoanPaid = (id) => {
+                const loan = state.loans.find(l => l.id === id);
+                if (loan) {
+                    const remaining = loan.amount - (loan.paid || 0);
+                    if (confirm(`¿Marcar como pagado el restante (${formatMoney(remaining)})?`)) {
+                        loan.paid = loan.amount;
+                        loan.status = 'Pagado';
+                        loan.paidDate = getToday();
+                        saveState();
+                        showToast('Préstamo marcado como pagado');
+                    }
+                }
+            };
+
+            // --- Debts Logic ---
+            const addDebt = () => {
+                const person = document.getElementById('debt-person').value;
+                const date = document.getElementById('debt-date').value;
+                const amount = parseFloat(document.getElementById('debt-amount').value);
+
+                if (!person || !date || isNaN(amount) || amount <= 0) {
+                    showToast('Por favor completa todos los campos correctamente');
+                    return;
+                }
+
+                if (!state.debts) state.debts = [];
+                state.debts.unshift({
+                    id: generateId(),
+                    person,
+                    date,
+                    amount,
+                    paid: 0,
+                    status: 'Pendiente',
+                    payments: []
+                });
+
+                closeModal('modal-debt');
+                document.getElementById('debt-form').reset();
+                document.getElementById('debt-date').value = getToday();
+                saveState();
+                showToast('Deuda registrada');
+            };
+
+            const openDebtPaymentModal = (id) => {
+                const debt = state.debts.find(d => d.id === id);
+                if (!debt) return;
+
+                currentDebtPaymentId = id;
+                const remaining = debt.amount - (debt.paid || 0);
+
+                document.getElementById('debt-payment-info').innerText =
+                    `Deuda a: ${debt.person}\nRestante: ${formatMoney(remaining)}`;
+
+                document.getElementById('debt-payment-amount').value = '';
+                document.getElementById('debt-payment-amount').max = remaining;
+
+                openModal('modal-debt-payment');
+                setTimeout(() => document.getElementById('debt-payment-amount').focus(), 100);
+            };
+
+            const submitDebtPayment = () => {
+                if (!currentDebtPaymentId) return;
+
+                const debt = state.debts.find(d => d.id === currentDebtPaymentId);
+                if (!debt) return;
+
+                const amount = parseFloat(document.getElementById('debt-payment-amount').value);
+                const remaining = debt.amount - (debt.paid || 0);
+
+                if (isNaN(amount) || amount <= 0) {
+                    showToast('Monto inválido');
+                    return;
+                }
+
+                if (amount > remaining + 0.01) {
+                    showToast('El pago no puede superar la deuda');
+                    return;
+                }
+
+                debt.paid = (debt.paid || 0) + amount;
+                if (!debt.payments) debt.payments = [];
+                debt.payments.push({ date: getToday(), amount });
+
+                // Check if paid off
+                if (Math.abs(debt.amount - debt.paid) < 0.01) {
+                    debt.status = 'Pagado';
+                    debt.paidDate = getToday();
+                    showToast('¡Deuda liquidada!');
+                } else {
+                    showToast('Pago registrado');
+                }
+
+                saveState();
+                closeModal('modal-debt-payment');
+                currentDebtPaymentId = null;
+            };
+
+            const requestSettleDebt = (id) => {
+                const debt = state.debts.find(d => d.id === id);
+                if (!debt) return;
+
+                pendingSettleId = id;
+                const remaining = debt.amount - (debt.paid || 0);
+
+                document.getElementById('settle-debt-info').innerHTML =
+                    `Estás a punto de liquidar tu deuda con <strong>${debt.person}</strong>.<br><br>` +
+                    `Se registrará un pago final de <strong style="color:var(--success)">${formatMoney(remaining)}</strong> para saldar la cuenta.`;
+
+                openModal('modal-confirm-settle');
+            };
+
+            const confirmSettleDebtAction = () => {
+                if (!pendingSettleId) return;
+
+                const debt = state.debts.find(d => d.id === pendingSettleId);
+                if (debt) {
+                    const remaining = debt.amount - (debt.paid || 0);
+
+                    debt.paid = debt.amount;
+                    debt.status = 'Pagado';
+                    debt.paidDate = getToday();
+
+                    // Add the final payment logic if we want to track it in history
+                    if (!debt.payments) debt.payments = [];
+                    debt.payments.push({ date: getToday(), amount: remaining, type: 'Liquidación' });
+
+                    saveState();
+                    showToast('Deuda liquidada exitosamente');
+                }
+
+                closeModal('modal-confirm-settle');
+                pendingSettleId = null;
+            };
+
+            const addBankMovement = () => {
+                const type = document.getElementById('bank-type').value;
+                const desc = document.getElementById('bank-desc').value;
+                const amount = parseFloat(document.getElementById('bank-amount').value);
+
+                if (!desc || isNaN(amount)) return;
+
+                if (editingId) {
+                    const index = state.bank.movements.findIndex(m => m.id === editingId);
+                    if (index !== -1) {
+                        // Keep original details like date, just update editable fields
+                        const original = state.bank.movements[index];
+                        state.bank.movements[index] = { ...original, type, desc, amount };
+                        showToast('Movimiento actualizado');
+                    }
+                    // Edit finished handled below
+                } else {
+                    state.bank.movements.unshift({
+                        id: generateId(),
+                        date: getToday(),
+                        type, desc, amount
+                    });
+                    showToast('Movimiento registrado');
+                }
+
+                saveState();
+
+                // Clear and Close
+                cancelBankEdit(); // Resets form and ID
+                closeModal('modal-bank');
+            };
+
+            const startEditBankMovement = (id) => {
+                const item = state.bank.movements.find(m => m.id === id);
+                if (!item) return;
+
+                editingId = id;
+                document.getElementById('bank-type').value = item.type;
+                document.getElementById('bank-desc').value = item.desc;
+                document.getElementById('bank-amount').value = item.amount;
+
+                document.querySelector('#modal-bank .modal-title').innerText = 'Editar Movimiento';
+                const btn = document.querySelector('#bank-form button[type="submit"]');
+                btn.innerText = 'Actualizar Movimiento';
+
+                openModal('modal-bank');
+            };
+
+            const cancelBankEdit = () => {
+                editingId = null;
+                document.getElementById('bank-form').reset();
+
+                document.querySelector('#modal-bank .modal-title').innerText = 'Movimiento Bancario';
+                const btn = document.querySelector('#bank-form button[type="submit"]');
+                btn.innerText = 'Registrar Movimiento';
+            };
+
+            const requestDelete = (type, id, btnElement) => {
+                pendingDelete = { type, id, btnElement };
+                openModal('modal-confirm-delete');
+            };
+
+            const confirmDeleteAction = () => {
+                if (!pendingDelete) return;
+                const { type, id, btnElement } = pendingDelete;
+
+                closeModal('modal-confirm-delete');
+                animateAndDelete(type, id, btnElement);
+
+                pendingDelete = null;
+            };
+
+            const animateAndDelete = (type, id, btnElement) => {
+                // Find parent row
+                const row = btnElement.closest('.list-item');
+
+                // Animate out
+                if (row) {
+                    row.classList.add('deleting');
+                    // Wait for animation
+                    setTimeout(() => {
+                        performDelete(type, id);
+                    }, 300); // Wait 300ms essentially (visual) -> 300ms in CSS
+                } else {
+                    performDelete(type, id);
+                }
+            };
+
+            const performDelete = (type, id) => {
+                if (type === 'expense') {
+                    state.expenses = state.expenses.filter(i => i.id !== id);
+                } else if (type === 'loan') {
+                    state.loans = state.loans.filter(i => i.id !== id);
+                } else if (type === 'debt') {
+                    state.debts = state.debts.filter(i => i.id !== id);
+                } else if (type === 'bank') {
+                    state.bank.movements = state.bank.movements.filter(i => i.id !== id);
+                }
+                saveState();
+                showToast('Eliminado');
+            };
+
+            const exportData = () => {
+                const dataStr = JSON.stringify(state, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `backup_gastos_${getToday()}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showToast('Archivo exportado');
+            };
+
+            const shareData = async () => {
+                const dataStr = JSON.stringify(state, null, 2);
+                const blob = new Blob([dataStr], { type: "application/json" });
+                const fileName = `backup_gastos_${getToday()}.json`;
+                const file = new File([blob], fileName, { type: "application/json" });
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({
+                            files: [file],
+                            title: 'Respaldo Control de Gastos',
+                            text: 'Aquí tienes mi respaldo de gastos.',
+                        });
+                        showToast('Archivo compartido exitosamente');
+                    } catch (error) {
+                        if (error.name !== 'AbortError') {
+                            showToast('Error al compartir');
+                            console.error(error);
+                        }
+                    }
+                } else {
+                    showToast('Tu navegador no soporta compartir archivos. Usa Exportar.');
+                }
+            };
+
+            const importData = (input) => {
+                const file = input.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const json = JSON.parse(e.target.result);
+                        if (confirm('Esto reemplazará todos tus datos actuales. ¿Continuar?')) {
+                            state = json;
+                            saveState();
+                            showToast('Datos importados con éxito');
+                        }
+                    } catch (err) {
+                        showToast('Error al leer el archivo JSON');
+                    }
+                };
+                reader.readAsText(file);
+            };
+
+            let clearConfirmTimer = null;
+
+            const requestClearData = (btn) => {
+                if (btn.dataset.confirming === 'true') {
+                    // Confirmed
+                    clearData();
+                    // Reset button
+                    btn.dataset.confirming = 'false';
+                    btn.innerText = '⚠️ Borrar todos los datos';
+                    btn.classList.remove('btn-confirm-delete');
+                    if (clearConfirmTimer) clearTimeout(clearConfirmTimer);
+                } else {
+                    // First click
+                    btn.dataset.confirming = 'true';
+                    btn.innerText = '🚫 ¿Estás seguro? Clic para confirmar';
+                    btn.classList.add('btn-confirm-delete');
+
+                    // Reset after 3 seconds
+                    clearConfirmTimer = setTimeout(() => {
+                        btn.dataset.confirming = 'false';
+                        btn.innerText = '⚠️ Borrar todos los datos';
+                        btn.classList.remove('btn-confirm-delete');
+                    }, 3000);
+                }
+            };
+
+            const clearData = () => {
+                localStorage.removeItem(STORAGE_KEY);
+                state = { expenses: [], loans: [], debts: [], bank: { initial: 0, movements: [] } };
+                saveState();
+                showToast('Todos los datos han sido eliminados');
+            };
+
+            // --- UI Rendering ---
+
+            const navigate = (sectionId) => {
+                // Clear edits when switching
+                cancelEdit();
+                cancelBankEdit();
+
+                // Hide any open modals
+                document.querySelectorAll('.modal-overlay').forEach(el => el.classList.remove('active'));
+
+                document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+                document.getElementById(sectionId).classList.add('active');
+
+                // removed nav-btn highlight logic as bottom bar is gone
+
+                // Scroll top
+                window.scrollTo(0, 0);
+            };
+
+            const render = () => {
+                // Calculate
+                const bankBalance = getBankBalance();
+                const totalExpenses = getTotalExpenses();
+                const loansPending = getLoansGiven();
+                const totalDebt = getTotalDebt();
+
+                // According to prompt: Final Balance = bank balance - expenses (if not deducted)
+                // Since my getBankBalance() ALREADY deducts 'Bank' expenses, the final balance usually equals that 
+                // PLUS whatever cash logic. Let's simpliy:
+                // Final Balance effectively = Bank Balance (assuming user manages everything there or cash is irrelevant for total net worth displayed)
+                // OR Balance Final = Bank Balance + Cash holding? 
+                // Let's stick to displaying the Calculated Bank Balance.
+                const finalBalance = bankBalance;
+
+                // Dashboard DOM
+                document.getElementById('dash-final-balance').innerText = formatMoney(finalBalance);
+                document.getElementById('dash-bank-balance').innerText = formatMoney(bankBalance);
+                document.getElementById('dash-total-expenses').innerText = formatMoney(totalExpenses);
+                document.getElementById('dash-loans-given').innerText = formatMoney(loansPending);
+                document.getElementById('dash-total-debt').innerText = formatMoney(totalDebt);
+
+                document.getElementById('bank-view-balance').innerText = formatMoney(bankBalance);
+
+                // Lists
+                renderExpenses();
+                renderLoans();
+                renderDebts();
+                renderBankMovements();
+                renderRecentActivity();
+            };
+
+            const renderExpenses = () => {
+                const list = document.getElementById('expenses-list');
+                list.innerHTML = '';
+                if (state.expenses.length === 0) {
+                    list.innerHTML = '<p class="text-center" style="padding: 20px; color: var(--text-muted);">No hay gastos registrados</p>';
+                    return;
+                }
+                state.expenses.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `
+                        <div class="item-details">
+                            <span class="item-title">${item.category}: ${item.desc}</span>
+                            <span class="item-subtitle"><i class="far fa-calendar-alt"></i> ${item.date} • <i class="fas fa-credit-card"></i> ${item.method}</span>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="item-amount amount-neg">-${formatMoney(item.amount)}</div>
+                            <div class="actions" style="justify-content: flex-end; margin-top: 8px;">
+                                <button class="btn-sm btn-secondary" onclick="app.startEditExpense('${item.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-danger" onclick="app.requestDelete('expense', '${item.id}', this)"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            };
+
+            const renderLoans = () => {
+                const list = document.getElementById('loans-list');
+                list.innerHTML = '';
+                if (state.loans.length === 0) {
+                    list.innerHTML = '<p class="text-center" style="padding: 20px; color: var(--text-muted);">No hay préstamos registrados</p>';
+                    return;
+                }
+                state.loans.forEach(item => {
+                    const isPending = item.status === 'Pendiente';
+                    const paid = item.paid || 0;
+                    const remaining = item.amount - paid;
+                    const progress = Math.min(100, (paid / item.amount) * 100);
+
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.style.flexDirection = 'column';
+                    div.style.alignItems = 'stretch';
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div class="item-details">
+                                <span class="item-title">${item.person}</span>
+                                <span class="item-subtitle">${item.date} • <span class="badge ${isPending ? 'badge-pending' : 'badge-paid'}">${item.status}</span></span>
+                            </div>
+                            <div class="item-amount amount-pos">${formatMoney(item.amount)}</div>
+                        </div>
+                        
+                        ${isPending ? `
+                        <div style="margin-bottom:15px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:4px;">
+                                <span>Pagado: ${formatMoney(paid)}</span>
+                                <span>Resta: ${formatMoney(remaining)}</span>
+                            </div>
+                            <div style="background:#f1f5f9; height:6px; border-radius:10px; overflow:hidden;">
+                                <div style="background:var(--primary-gradient); height:100%; width:${progress}%"></div>
+                            </div>
+                        </div>` : ''}
+
+                        <div class="actions" style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                            ${isPending ? `
+                                <button class="btn btn-sm" style="background:#eefcf0; color:#146215; border:1px solid #c6f6d5; width: 100%;" onclick="app.openLoanPaymentModal('${item.id}')"><i class="fas fa-plus-circle"></i> Registrar Abono</button>
+                                <button class="btn btn-sm" style="background:#146215; color:white; border:none; width: 100%;" onclick="app.markLoanPaid('${item.id}')"><i class="fas fa-check-circle"></i> Liquidar Total</button>
+                            ` : ''}
+                            <button class="btn btn-sm btn-danger" style="width: 100%;" onclick="app.requestDelete('loan', '${item.id}', this)"><i class="fas fa-trash"></i> Eliminar Registro</button>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            };
+
+            const renderDebts = () => {
+                const list = document.getElementById('debts-list');
+                list.innerHTML = '';
+                if (!state.debts || state.debts.length === 0) {
+                    list.innerHTML = '<p class="text-center" style="padding: 20px; color: var(--text-muted);">No hay deudas registradas</p>';
+                    return;
+                }
+                state.debts.forEach(item => {
+                    const isPending = item.status === 'Pendiente';
+                    const paid = item.paid || 0;
+                    const remaining = item.amount - paid;
+                    const progress = Math.min(100, (paid / item.amount) * 100);
+
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.style.flexDirection = 'column';
+                    div.style.alignItems = 'stretch';
+                    div.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                            <div class="item-details">
+                                <span class="item-title">${item.person}</span>
+                                <span class="item-subtitle">${item.date} • <span class="badge ${isPending ? 'badge-pending' : 'badge-paid'}">${item.status}</span></span>
+                            </div>
+                            <div class="item-amount amount-neg">${formatMoney(item.amount)}</div>
+                        </div>
+
+                        ${isPending ? `
+                        <div style="margin-bottom:15px;">
+                            <div style="display:flex; justify-content:space-between; font-size:0.75rem; margin-bottom:4px;">
+                                <span>Pagado: ${formatMoney(paid)}</span>
+                                <span>Resta: ${formatMoney(remaining)}</span>
+                            </div>
+                            <div style="background:#f1f5f9; height:6px; border-radius:10px; overflow:hidden;">
+                                <div style="background:#f59e0b; height:100%; width:${progress}%"></div>
+                            </div>
+                        </div>` : ''}
+
+                        <div class="actions" style="display: flex; flex-direction: column; gap: 8px; margin-top: 5px;">
+                            ${isPending ? `
+                                <button class="btn btn-sm" style="background:#fff7ed; color:#9a3412; border:1px solid #ffedd5; width: 100%;" onclick="app.openDebtPaymentModal('${item.id}')"><i class="fas fa-plus-circle"></i> Registrar Pago</button>
+                                <button class="btn btn-sm" style="background:#9a3412; color:white; border:none; width: 100%;" onclick="app.requestSettleDebt('${item.id}')"><i class="fas fa-check-circle"></i> Liquidar Total</button>
+                            ` : ''}
+                            <button class="btn btn-sm btn-danger" style="width: 100%;" onclick="app.requestDelete('debt', '${item.id}', this)"><i class="fas fa-trash"></i> Eliminar Registro</button>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            };
+
+            const renderBankMovements = () => {
+                const list = document.getElementById('bank-list');
+                list.innerHTML = '';
+                if (state.bank.movements.length === 0) {
+                    list.innerHTML = '<p class="text-center" style="padding: 20px; color: var(--text-muted);">No hay movimientos bancarios</p>';
+                    return;
+                }
+                state.bank.movements.forEach(item => {
+                    const isIngreso = item.type === 'Ingreso';
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.innerHTML = `
+                        <div class="item-details">
+                            <span class="item-title">${item.desc}</span>
+                            <span class="item-subtitle"><i class="far fa-calendar-alt"></i> ${item.date} • <i class="fas fa-tag"></i> ${item.type}</span>
+                        </div>
+                        <div style="text-align:right">
+                            <div class="item-amount ${isIngreso ? 'amount-pos' : 'amount-neg'}">
+                                ${isIngreso ? '+' : '-'}${formatMoney(item.amount)}
+                            </div>
+                            <div class="actions" style="justify-content: flex-end; margin-top: 8px;">
+                                <button class="btn-sm btn-secondary" onclick="app.startEditBankMovement('${item.id}')"><i class="fas fa-edit"></i></button>
+                                <button class="btn-sm btn-danger" onclick="app.requestDelete('bank', '${item.id}', this)"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            };
+
+            const renderRecentActivity = () => {
+                const all = [
+                    ...state.expenses.map(e => ({ ...e, type: 'expense', sortDate: e.date })),
+                    ...state.loans.map(l => ({ ...l, type: 'loan', sortDate: l.date })),
+                    ...state.bank.movements.map(b => ({ ...b, type: 'bank', sortDate: b.date }))
+                ];
+
+                all.sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate));
+                const recent = all.slice(0, 5);
+                const list = document.getElementById('recent-activity-list');
+                list.innerHTML = '';
+
+                if (recent.length === 0) {
+                    list.innerHTML = '<p class="text-center" style="padding: 20px; color: var(--text-muted);">Sin actividad reciente</p>';
+                    return;
+                }
+
+                recent.forEach(item => {
+                    let title = "", amountStr = "", colorClass = "", icon = "";
+                    if (item.type === 'expense') {
+                        title = `Gasto: ${item.category}`;
+                        amountStr = `-${formatMoney(item.amount)}`;
+                        colorClass = 'amount-neg';
+                        icon = 'fa-shopping-cart';
+                    } else if (item.type === 'loan') {
+                        title = `Préstamo a ${item.person}`;
+                        amountStr = `${formatMoney(item.amount)}`;
+                        colorClass = 'amount-pos';
+                        icon = 'fa-hand-holding-usd';
+                    } else {
+                        title = `Banco: ${item.type}`;
+                        amountStr = (item.type === 'Ingreso' ? '+' : '-') + formatMoney(item.amount);
+                        colorClass = item.type === 'Ingreso' ? 'amount-pos' : 'amount-neg';
+                        icon = 'fa-university';
+                    }
+
+                    const div = document.createElement('div');
+                    div.className = 'list-item';
+                    div.style.padding = '15px';
+                    div.innerHTML = `
+                        <div class="item-details">
+                            <span class="item-title"><i class="fas ${icon}" style="width:20px; opacity:0.6"></i> ${title}</span>
+                            <span class="item-subtitle">${item.sortDate}</span>
+                        </div>
+                        <div class="item-amount ${colorClass}" style="font-size: 0.95rem;">${amountStr}</div>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+
+            // --- Init ---
+            const init = () => {
+                loadState();
+
+                // Initialize date inputs
+                const today = getToday();
+                ['exp-date', 'loan-date', 'debt-date'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) el.value = today;
+                });
+
+                render();
+            };
+
+            return {
+                init,
+                requestClearData,
+                navigate,
+                openModal,
+                closeModal,
+                addExpense,
+                startEditExpense,
+                cancelEdit,
+                addLoan,
+                openLoanPaymentModal,
+                submitLoanPayment,
+                markLoanPaid,
+                addDebt,
+                openDebtPaymentModal,
+                submitDebtPayment,
+                requestSettleDebt,
+                confirmSettleDebtAction,
+                addBankMovement,
+                startEditBankMovement,
+                cancelBankEdit,
+                deleteItem: animateAndDelete, // exposing for backward compat or console usage if needed, but UI uses requestDelete
+                requestDelete,
+                confirmDeleteAction,
+                exportData,
+                shareData,
+                importData,
+                clearData
+            };
+
+        })();
+
+        // Start App when DOM ready
+        document.addEventListener('DOMContentLoaded', app.init);
+
+    </script>
+</body>
+
+</html>

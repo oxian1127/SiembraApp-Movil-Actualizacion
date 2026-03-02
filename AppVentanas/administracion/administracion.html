@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Administración</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+            --bg-color: #f0f4f1;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 20px rgba(20, 98, 21, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+            transition: var(--transition);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-body {
+            padding: 30px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #e9f7ef 0%, #d1e7d1 100%);
+            color: #146215;
+            font-size: 30px;
+            transition: var(--transition);
+        }
+
+        .card:hover .icon-circle {
+            background: var(--primary-gradient);
+            color: white;
+            transform: rotate(-5deg) scale(1.1);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #146215;
+            margin-bottom: 12px;
+        }
+
+        .card-text {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .btn-custom {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            width: 100%;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(44, 158, 69, 0.3);
+        }
+
+        .btn-custom i {
+            margin-right: 10px;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #0b3b1f 0%, #146215 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(20, 98, 21, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        /* --- ESTILOS MODO OSCURO --- */
+        .dark-mode {
+            --bg-color: #0d1117;
+            --card-bg: rgba(22, 27, 34, 0.8);
+            --text-main: #e6edf3;
+            --text-muted: #8b949e;
+            --glass-border: rgba(48, 54, 61, 0.7);
+        }
+
+        .dark-mode .header {
+            background: linear-gradient(135deg, #0b3b1f 0%, #0e1a14 100%);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .dark-mode .icon-circle {
+            background: rgba(44, 158, 69, 0.1);
+            color: #9be6a6;
+        }
+
+        .dark-mode .card-title {
+            color: #9be6a6;
+        }
+
+        .dark-mode .btn-custom {
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+        }
+
+        /* Botón de alternar */
+        .toggle-card {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .toggle-btn {
+            display: inline-block;
+            padding: 12px 28px;
+            border-radius: 50px;
+            background: white;
+            color: #146215;
+            border: 1px solid #d1e7d1;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .toggle-btn:hover {
+            background: #f8f9fa;
+            transform: scale(1.05);
+            color: #146215;
+        }
+
+        .dark-mode .toggle-btn {
+            background: #21262d;
+            border-color: #30363d;
+            color: #9be6a6;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Encabezado -->
+    <div class="header">
+        Administración
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Gestión de productos -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-box-open"></i></div>
+                <h5 class="card-title">Gestión de productos</h5>
+                <p class="card-text">Solicita la carga de productos en la plataforma completando el formulario.</p>
+                <a href="https://docs.google.com/forms/d/e/1FAIpQLSfjjIAScVpu1I8_LulMJ5gaqyAJEXnHHYSI-uM1xC4AybdnSQ/viewform?usp=sf_link"
+                    target="_blank" class="btn btn-custom"><i class="fa fa-box-open"></i> Ir al formulario</a>
+            </div>
+        </div>
+
+        <!-- Publicación masiva -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-file-upload"></i></div>
+                <h5 class="card-title">Publicación masiva</h5>
+                <p class="card-text">Carga masiva de productos desde un archivo XML o CSV.</p>
+                <a href="go:g_pp" class="btn btn-custom"><i class="fa fa-file-upload"></i> Ver más</a>
+            </div>
+        </div>
+
+        <!-- Datos en tiempo real -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-chart-line"></i></div>
+                <h5 class="card-title">Datos en tiempo real</h5>
+                <p class="card-text">Consulta información sobre extensiones de agricultura familiar en tu zona.</p>
+                <a href="go:data" class="btn btn-custom"><i class="fa fa-chart-line"></i> Ver datos</a>
+            </div>
+        </div>
+
+        <!-- Calculadora de precios -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-calculator"></i></div>
+                <h5 class="card-title">Calculadora de precios</h5>
+                <p class="card-text">Calcula el precio de venta basado en el costo de producción y ganancias.</p>
+                <a href="go:calc" class="btn btn-custom"><i class="fa fa-calculator"></i> Calcular</a>
+            </div>
+        </div>
+
+        <!-- Lector QR -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-qrcode"></i></div>
+                <h5 class="card-title">Lector QR</h5>
+                <p class="card-text">Escanea códigos QR para obtener información adicional.</p>
+                <a href="go:qr" class="btn btn-custom"><i class="fa fa-qrcode"></i> Abrir lector</a>
+            </div>
+        </div>
+
+        <!-- PQRS y Sugerencias -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-envelope-open-text"></i></div>
+                <h5 class="card-title">PQRS y Sugerencias</h5>
+                <p class="card-text">Envía tus peticiones, quejas, reclamos o sugerencias.</p>
+                <a href="go:p_s" class="btn btn-custom"><i class="fa fa-envelope-open-text"></i> Enviar PQRS</a>
+            </div>
+        </div>
+
+        <!-- NUEVO: Calculadora (misma apariencia que las tarjetas anteriores) -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fa fa-calculator"></i></div>
+                <h5 class="card-title">Calculadora de salarios</h5>
+                <p class="card-text">Herramienta para calcular el valor en salarios mínimos (Colombia).</p>
+                <a href="go:calc_avanz" class="btn btn-custom">
+                    <i class="fa fa-calculator"></i> Abrir calculadora
+                </a>
+            </div>
+        </div>
+
+        <!-- NUEVO: tarjeta para alternar modo claro/oscuro -->
+        <div class="toggle-card">
+            <!-- Reemplaza los valores data-dark/data-light por tus enlaces reales -->
+            <a id="themeLink" class="toggle-btn" href="http://action_dark" data-dark="http://action_dark"
+                data-light="http://action_dark" data-mode="light" aria-pressed="false">Activar modo oscuro</a>
+        </div>
+    </div>
+
+    <!-- Nota -->
+    <div class="footer">
+        <p><strong>Nota:</strong> Presiona sobre el botón de cada módulo para acceder a la sección correspondiente.</p>
+    </div>
+
+    <!-- Script: sólo cambia texto/href del enlace para alternar entre modos (no aplica tema) -->
+    <script>
+        (function () {
+            const link = document.getElementById('themeLink');
+            if (!link) return;
+            const darkHref = link.dataset.dark || link.href;
+            const lightHref = link.dataset.light || '#';
+            // modo inicial: 'light' indica que al pulsar se activará darkHref
+            let mode = link.dataset.mode || 'light';
+
+            // quitar subrayado por si el navegador lo fuerza
+            link.style.textDecoration = 'none';
+
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                // destino a navegar (ejecuta la acción del enlace)
+                const target = (mode === 'light') ? darkHref : lightHref;
+
+                // alternar el modo para la próxima pulsación
+                mode = (mode === 'light') ? 'dark' : 'light';
+                link.dataset.mode = mode;
+
+                // actualizar texto y href visibles para el usuario
+                if (mode === 'light') {
+                    link.textContent = 'Activar modo oscuro';
+                    link.href = darkHref;
+                    link.setAttribute('aria-pressed', 'false');
+                } else {
+                    link.textContent = 'Activar modo claro';
+                    link.href = lightHref;
+                    link.setAttribute('aria-pressed', 'true');
+                }
+
+                // realizar la navegación (mantén esto si tus enlaces son manejados por la app)
+                try {
+                    window.location.href = target;
+                } catch (err) {
+                    // en caso de esquemas especiales, fallback a asignar location
+                    window.location = target;
+                }
+            });
+        })();
+    </script>
+
+    <!-- El script de alternar tema real (si ya lo tienes) no se incluye aquí, solo el enlace que cambia -->
+</body>
+
+</html>

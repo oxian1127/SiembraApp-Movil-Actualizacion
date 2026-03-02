@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Licencias de Código Abierto</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+            --secondary-gradient: linear-gradient(135deg, #2c9e45 0%, #38bc57 100%);
+            --bg-color: #f0f4f1;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-custom {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            box-shadow: 0 10px 30px rgba(20, 98, 21, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .header-custom h1 {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-size: 1.8rem;
+        }
+
+        .container-custom {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            flex: 1;
+        }
+
+        .license-card {
+            border: 1px solid var(--glass-border);
+            border-radius: 25px;
+            box-shadow: var(--shadow-soft);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            margin-bottom: 25px;
+            padding: 25px;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .license-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+            border-color: rgba(44, 158, 69, 0.3);
+        }
+
+        .license-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .license-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            color: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(20, 98, 21, 0.2);
+        }
+
+        .license-card h5 {
+            color: #146215;
+            font-weight: 700;
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .license-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .btn-license {
+            align-self: flex-start;
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 18px;
+            border-radius: 15px;
+            background: white;
+            color: #146215;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            border: 1px solid #dfe6e9;
+            transition: var(--transition);
+        }
+
+        .btn-license i {
+            margin-right: 8px;
+        }
+
+        .btn-license:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(20, 98, 21, 0.2);
+        }
+
+        .footer-custom {
+            text-align: center;
+            padding: 30px 20px;
+            background: white;
+            border-top: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-top: auto;
+        }
+
+        .footer-custom strong {
+            color: #146215;
+        }
+
+        @media (max-width: 768px) {
+            .header-custom {
+                padding: 30px 15px;
+            }
+
+            .header-custom h1 {
+                font-size: 1.5rem;
+            }
+
+            .license-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header-custom">
+        <h1>Licencias de Código Abierto</h1>
+    </div>
+
+    <div class="container-custom">
+        <!-- MIT -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-file-code"></i></div>
+                <h5>Licencia MIT</h5>
+            </div>
+            <p>Es una licencia muy permisiva que permite a los usuarios modificar, distribuir y utilizar el software,
+                tanto con fines comerciales como no comerciales, sin restricciones significativas.</p>
+            <a href="https://opensource.org/licenses/MIT" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- GNU GPL -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-gavel"></i></div>
+                <h5>GNU General Public License (GPL)</h5>
+            </div>
+            <p>Es una licencia copyleft que garantiza las cuatro libertades fundamentales: usar, estudiar, modificar y
+                distribuir el software. Cualquier software derivado debe distribuirse bajo la GPL.</p>
+            <a href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- Apache -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-feather-alt"></i></div>
+                <h5>Licencia Apache</h5>
+            </div>
+            <p>Es una licencia permisiva ampliamente utilizada. Permite a los usuarios utilizar, modificar y distribuir
+                el software sin restricciones significativas y con protección de patentes.</p>
+            <a href="https://www.apache.org/licenses/" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- BSD -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-shield-alt"></i></div>
+                <h5>Licencia BSD</h5>
+            </div>
+            <p>Familia de licencias permisivas que otorgan libertad de uso, modificación y distribución con requisitos
+                mínimos de atribución de autoría.</p>
+            <a href="https://opensource.org/licenses/BSD-3-Clause" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- MPL -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-globe"></i></div>
+                <h5>Mozilla Public License (MPL)</h5>
+            </div>
+            <p>Licencia de código abierto equilibrada que permite usar el software mientras establece condiciones
+                específicas para la distribución de sus modificaciones.</p>
+            <a href="https://www.mozilla.org/en-US/MPL/" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- Creative Commons -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fab fa-creative-commons"></i></div>
+                <h5>Creative Commons</h5>
+            </div>
+            <p>Conjunto de licencias que permiten a los autores compartir su trabajo de manera flexible mientras
+                retienen ciertos derechos según sus necesidades.</p>
+            <a href="https://creativecommons.org/licenses/" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- EPL -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-code-branch"></i></div>
+                <h5>Eclipse Public License (EPL)</h5>
+            </div>
+            <p>Licencia de código abierto diseñada para ser amigable con los negocios, permitiendo la modificación y
+                distribución del software bajo sus propios términos.</p>
+            <a href="https://www.eclipse.org/legal/epl-2.0/" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- AGPL -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-server"></i></div>
+                <h5>Affero General Public License (AGPL)</h5>
+            </div>
+            <p>Variante de la GPL diseñada específicamente para software que se ejecuta en servidores de red, cerrando
+                el "hueco del ASP".</p>
+            <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- LGPL -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-layer-group"></i></div>
+                <h5>GNU Lesser General Public License (LGPL)</h5>
+            </div>
+            <p>Licencia copyleft utilizada principalmente para bibliotecas de software, permitiendo su uso en proyectos
+                tanto propietarios como libres.</p>
+            <a href="https://www.gnu.org/licenses/lgpl-3.0.en.html" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+
+        <!-- ODbL -->
+        <div class="license-card">
+            <div class="license-header">
+                <div class="license-icon"><i class="fas fa-database"></i></div>
+                <h5>Open Database License (ODbL)</h5>
+            </div>
+            <p>Licencia diseñada para bases de datos abiertas, garantizando que la información contenida sea accesible y
+                reutilizable por la comunidad.</p>
+            <a href="https://opendatacommons.org/licenses/odbl/" target="_blank" class="btn-license">
+                <i class="fas fa-external-link-alt"></i> Ver detalles
+            </a>
+        </div>
+    </div>
+
+    <footer class="footer-custom">
+        Desarrollado por <strong>SiembraApp Móvil</strong> &copy; 2025
+    </footer>
+</body>
+
+</html>
