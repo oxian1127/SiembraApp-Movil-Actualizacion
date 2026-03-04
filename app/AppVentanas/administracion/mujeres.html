@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <title>Mujeres Rurales</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary-gradient: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+      --secondary-gradient: linear-gradient(135deg, #2c9e45 0%, #38bc57 100%);
+      --bg-color: #f0f4f1;
+      --text-main: #2d3436;
+      --text-muted: #636e72;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    .header-custom {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      border-bottom-left-radius: 40px;
+      border-bottom-right-radius: 40px;
+      box-shadow: 0 10px 30px rgba(20, 98, 21, 0.2);
+      margin-bottom: 30px;
+    }
+
+    .header-custom h1 {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+      font-size: 2rem;
+    }
+
+    .header-custom p {
+      font-weight: 300;
+      opacity: 0.9;
+      margin-bottom: 0;
+    }
+
+    .container-custom {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 25px 60px;
+    }
+
+    .card {
+      border: 1px solid var(--glass-border);
+      border-radius: 30px;
+      box-shadow: var(--shadow-soft);
+      background: var(--card-bg);
+      backdrop-filter: blur(10px);
+      margin-bottom: 30px;
+      padding: 0;
+      transition: var(--transition);
+      overflow: hidden;
+    }
+
+    .card:hover {
+      transform: translateY(-8px) scale(1.01);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    }
+
+    .section-title {
+      background: var(--primary-gradient);
+      color: white;
+      padding: 15px 25px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .section-title i {
+      margin-right: 12px;
+    }
+
+    .card-body-custom {
+      padding: 30px;
+      text-align: center;
+    }
+
+    .card-footer-custom {
+      padding: 20px 30px;
+      background: rgba(0, 0, 0, 0.02);
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+      border-top: 1px solid var(--glass-border);
+    }
+
+    .btn-custom {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 25px;
+      border-radius: 20px;
+      background: var(--primary-gradient);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: var(--transition);
+      border: none;
+      box-shadow: 0 5px 15px rgba(20, 98, 21, 0.2);
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .btn-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(20, 98, 21, 0.4);
+      color: white;
+    }
+
+    .info-alert {
+      background: white;
+      border-left: 5px solid #2c9e45;
+      padding: 20px 25px;
+      border-radius: 15px;
+      box-shadow: var(--shadow-soft);
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .info-alert i {
+      font-size: 1.5rem;
+      color: #146215;
+    }
+
+    .info-alert p {
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--text-main);
+    }
+
+    .d-grid-custom {
+      display: grid;
+      gap: 15px;
+    }
+
+    a.link-green {
+      color: #146215;
+      font-weight: 600;
+      text-decoration: none;
+      transition: var(--transition);
+    }
+
+    a.link-green:hover {
+      color: #2c9e45;
+      text-decoration: underline;
+    }
+
+    .img-premium {
+      transition: var(--transition);
+      border-radius: 20px;
+    }
+
+    .img-premium:hover {
+      transform: scale(1.05);
+    }
+
+    .ventures-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      text-align: left;
+    }
+
+    .venture-card {
+      display: flex;
+      align-items: center;
+      background: white;
+      border: 1px solid var(--glass-border);
+      padding: 15px 20px;
+      border-radius: 18px;
+      text-decoration: none;
+      color: var(--text-main);
+      transition: var(--transition);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    }
+
+    .venture-card:hover {
+      transform: translateX(8px);
+      box-shadow: 0 8px 25px rgba(20, 98, 21, 0.12);
+      border-color: rgba(44, 158, 69, 0.3);
+      background: linear-gradient(to right, white, #f8fcf9);
+    }
+
+    .v-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #e9f7ef 0%, #d1e7d1 100%);
+      color: #146215;
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+      margin-right: 20px;
+      transition: var(--transition);
+    }
+
+    .venture-card:hover .v-icon {
+      background: var(--primary-gradient);
+      color: white;
+      transform: scale(1.1) rotate(-5deg);
+    }
+
+    .v-content {
+      flex-grow: 1;
+    }
+
+    .v-content h4 {
+      margin: 0 0 4px 0;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #146215;
+    }
+
+    .v-content p {
+      margin: 0;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .v-arrow {
+      margin-left: 15px;
+      color: #a0aec0;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+
+    .venture-card:hover .v-arrow {
+      color: #146215;
+      transform: translateX(4px);
+    }
+
+    @media (max-width: 768px) {
+      .header-custom {
+        padding: 30px 15px;
+      }
+
+      .header-custom h1 {
+        font-size: 1.6rem;
+      }
+
+      .card-body-custom {
+        padding: 20px;
+      }
+
+      .card-footer-custom {
+        padding: 15px 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header-custom">
+    <h1>Mujeres Rurales</h1>
+    <p>Explora información y recursos sobre mujeres rurales en Colombia y el mundo.</p>
+  </div>
+
+  <div class="container-custom">
+    <!-- Tarjeta 1: RED Siembra -->
+    <div class="card">
+      <h2 class="section-title">
+        <i class="fas fa-users"></i>RED Siembra App Móvil
+      </h2>
+      <div class="card-body-custom">
+        <a href="go:mujer" style="display: inline-block; padding: 20px;">
+          <i class="fas fa-users-cog fa-5x" style="color: #146215; opacity: 0.9; transition: transform 0.3s;"
+            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></i>
+        </a>
+      </div>
+      <div class="card-footer-custom">
+        Conoce más de la RED de mujeres de <strong>Siembra App</strong>. Podrás explorar a través de los filtros otros
+        perfiles de usuarios y organizaciones para fortalecer tu red de contactos.
+      </div>
+    </div>
+
+    <!-- Tarjeta 2: Mujer Rural DANE -->
+    <div class="card">
+      <h2 class="section-title">
+        <i class="fas fa-file-alt"></i>Situación de las Mujeres Rurales en Colombia - DANE
+      </h2>
+      <div class="card-body-custom">
+        <a href="https://www.dane.gov.co/files/investigaciones/notas-estadisticas/oct-2021-nota-estadistica-situacion-mujeres-rurales-colombia-resumen.pdf"
+          target="_blank" style="display: inline-block; padding: 20px;">
+          <i class="fas fa-file-pdf fa-5x" style="color: #146215; opacity: 0.9; transition: transform 0.3s;"
+            onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'"></i>
+        </a>
+      </div>
+      <div class="card-footer-custom">
+        En Colombia, las mujeres rurales representan una parte fundamental de la economía agrícola. Más del 30% de la
+        población rural está compuesta por mujeres, piezas clave en la producción de alimentos y preservación cultural.
+        <br><br>
+        Consulta el sitio oficial del <a href="https://www.dane.gov.co/" target="_blank" class="link-green">DANE</a> o
+        explora programas en el <a href="https://www.minagricultura.gov.co/" target="_blank"
+          class="link-green">Ministerio de Agricultura</a>.
+      </div>
+    </div>
+
+    <!-- Tarjeta 3: Emprendimiento y Apoyo -->
+    <div class="card">
+      <h2 class="section-title">
+        <i class="fas fa-rocket"></i>Iniciativas de Emprendimiento
+      </h2>
+      <div class="card-body-custom" style="padding: 25px;">
+        <div class="ventures-grid">
+          <!-- Item 1 -->
+          <a href="https://fondomujer.gov.co/" target="_blank" class="venture-card">
+            <div class="v-icon"><i class="fas fa-seedling"></i></div>
+            <div class="v-content">
+              <h4>Fondo Mujer Emprende</h4>
+              <p>Programas de capitalización y apoyo productivo para la autonomía económica de la mujer rural.</p>
+            </div>
+            <i class="fas fa-chevron-right v-arrow"></i>
+          </a>
+          <!-- Item 2 -->
+          <a href="https://fundacionwwbcolombia.org/" target="_blank" class="venture-card">
+            <div class="v-icon"><i class="fas fa-hands-helping"></i></div>
+            <div class="v-content">
+              <h4>Fundación WWB Colombia</h4>
+              <p>Herramientas empresariales, capacitación financiera y conexiones comerciales para el campo.</p>
+            </div>
+            <i class="fas fa-chevron-right v-arrow"></i>
+          </a>
+          <!-- Item 3 -->
+          <a href="https://innpulsacolombia.com/" target="_blank" class="venture-card">
+            <div class="v-icon"><i class="fas fa-chart-line"></i></div>
+            <div class="v-content">
+              <h4>iNNpulsa Colombia</h4>
+              <p>Oferta de programas de innovación y fortalecimiento para agronegocios liderados por mujeres.</p>
+            </div>
+            <i class="fas fa-chevron-right v-arrow"></i>
+          </a>
+          <!-- Item 4 -->
+          <a href="https://www.bancamia.com.co/categoria/mujeres/" target="_blank" class="venture-card">
+            <div class="v-icon"><i class="fas fa-hand-holding-usd"></i></div>
+            <div class="v-content">
+              <h4>Bancamía - Línea Mujeres</h4>
+              <p>Inclusión financiera, microcréditos y ahorro enfocados en el empoderamiento femenino.</p>
+            </div>
+            <i class="fas fa-chevron-right v-arrow"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerta Informativa Dinámica -->
+    <div class="info-alert" id="dynamic-alert">
+      <i class="fas fa-lightbulb" style="font-size: 2rem;"></i>
+      <p id="fact-text" style="transition: opacity 0.5s ease; opacity: 1;">
+        <strong>¿Lo sabías?</strong> Hay más de 5.7 millones de mujeres rurales en Colombia desempeñando roles vitales
+        en el hogar y en la producción agropecuaria.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Banco de datos reales extraídos de DANE / MinAgricultura / ONU Mujeres
+    const facts = [
+      "<strong>¿Lo sabías?</strong> Hay más de 5.7 millones de mujeres rurales en Colombia desempeñando roles vitales en el hogar y en la producción agropecuaria.",
+      "<strong>Dato Importante:</strong> Según el DANE, las mujeres rurales dedican en promedio 8 horas diarias a labores de cuidado no remuneradas, frente a las 3 horas de los hombres.",
+      "<strong>Realidad del Campo:</strong> El 26% de las Unidades Productoras Agropecuarias (UPA) en el país son dirigidas por mujeres, promoviendo la seguridad alimentaria mundial (DANE).",
+      "<strong>Emprendimiento:</strong> Apoyar emprendimientos de mujeres rurales acelera el desarrollo local y reinvierte hasta el 90% de sus ingresos en sus familias (ONU).",
+      "<strong>Educación:</strong> El Fondo Mujer Emprende trabaja activamente para cerrar las brechas digitales y de financiamiento que aún enfrentan más de 2 millones de jóvenes rurales colombianas.",
+      "<strong>El Valor de la Tierra:</strong> De acuerdo a cifras oficiales, solo alrededor del 26% de las mujeres rurales en Colombia declaran poseer titulación formal sobre las tierras que trabajan.",
+      "<strong>Impacto Sostenible:</strong> Las mujeres rurales son agentes clave para conseguir los Objetivos de Desarrollo Sostenible (ODS), especialmente en la erradicación del hambre y la pobreza (FAO)."
+    ];
+
+    const factTextElement = document.getElementById("fact-text");
+    let currentFactIndex = 0;
+
+    // Cambiar la frase cada 8 segundos (8000 ms)
+    setInterval(() => {
+      // 1. Ocultar suavemente
+      factTextElement.style.opacity = 0;
+
+      // 2. Esperar medio segundo para cambiar el texto (sincronizado con la transición CSS)
+      setTimeout(() => {
+        currentFactIndex = (currentFactIndex + 1) % facts.length;
+        factTextElement.innerHTML = facts[currentFactIndex];
+
+        // 3. Volver a mostrar
+        factTextElement.style.opacity = 1;
+      }, 500);
+
+    }, 8000);
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Atención VBG</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+            --bg-color: #f0f4f1;
+            --text-main: #2d3436;
+            --text-muted: #636e72;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--primary-gradient);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            box-shadow: 0 4px 20px rgba(20, 98, 21, 0.2);
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .btn-back {
+            position: absolute;
+            top: 50%;
+            left: 20px;
+            transform: translateY(-50%);
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .container {
+            max-width: 600px;
+            padding: 0 20px 40px;
+        }
+
+        .card {
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 24px;
+            transition: var(--transition);
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-body {
+            padding: 30px;
+            text-align: center;
+            z-index: 1;
+            position: relative;
+        }
+
+        .icon-circle {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #e9f7ef 0%, #d1e7d1 100%);
+            color: #146215;
+            font-size: 30px;
+            transition: var(--transition);
+        }
+
+        .card:hover .icon-circle {
+            background: var(--primary-gradient);
+            color: white;
+            transform: rotate(-5deg) scale(1.1);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #146215;
+            margin-bottom: 12px;
+        }
+
+        .card-text {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .btn-custom {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            width: 100%;
+            text-align: center;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(44, 158, 69, 0.3);
+            display: inline-block;
+            text-decoration: none;
+        }
+
+        .btn-custom i {
+            margin-right: 10px;
+        }
+
+        .btn-custom:hover {
+            background: linear-gradient(135deg, #0b3b1f 0%, #146215 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(20, 98, 21, 0.4);
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
+            border-top: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Encabezado -->
+    <div class="header">
+        <a href="go:produc" class="btn-back"><i class="fas fa-arrow-left"></i></a>
+        Atención VBG
+    </div>
+
+    <!-- Contenido principal -->
+    <div class="container">
+        <!-- Opción 1: Mujeres registradas -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fas fa-female"></i></div>
+                <h5 class="card-title">Mujeres en SiembraApp</h5>
+                <p class="card-text">Accede a la sección de mujeres registradas en Siembra App Móvil para gestionar su
+                    información.</p>
+                <a href="go:mujer_menu" class="btn btn-custom"><i class="fas fa-users"></i> Ver Mujeres Registradas</a>
+            </div>
+        </div>
+
+        <!-- Opción 2: Contenidos Pedagógicos -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fas fa-book-reader"></i></div>
+                <h5 class="card-title">Inclusión y Liderazgo</h5>
+                <p class="card-text">Contenidos pedagógicos sobre derechos económicos, liderazgo y asociatividad
+                    (didáctico).</p>
+                <a href="go:contenidos_pedagogicos" class="btn btn-custom"><i class="fas fa-book-open"></i> Acceder a
+                    Contenidos</a>
+            </div>
+        </div>
+
+        <!-- Opción 3: Fichas Informativas -->
+        <div class="card">
+            <div class="card-body">
+                <div class="icon-circle" aria-hidden="true"><i class="fas fa-file-invoice"></i></div>
+                <h5 class="card-title">Fichas de Productos</h5>
+                <p class="card-text">Diseño de fichas informativas para productos y procesos productivos (patios
+                    productivos, transformados, etc.).</p>
+                <a href="go:fichas_informativas" class="btn btn-custom"><i class="fas fa-file-alt"></i> Ver Fichas</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nota -->
+    <div class="footer">
+        <p><strong>Nota:</strong> Selecciona una opción para gestionar la prevención y atención VBG.</p>
+    </div>
+
+</body>
+
+</html>

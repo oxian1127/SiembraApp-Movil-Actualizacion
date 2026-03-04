@@ -1,0 +1,29 @@
+Menú lateral
+
+-> Fondo: #f3f3f3
+-> Iconos: #38bc57
+-> Color de sección activa: #38bc57
+-> Color de separador de sección: #38bc57
+-> Color fondo iconos organizaciones: #d3f0da
+-> Color icono foro: #176419
+-> Color iconos menú inferior: #116415
+-> Color iconos administración: #136415
+-> Color iconos web fondo: #69C36F
+
+Iconos organizaciones
+
+-> color: #36bd58
+
+Tienda
+
+-> Color titulo: #126314
+-> Color texto: #606060
+
+Escala de icono: 50%
+
+
+atribuciones a autor iconos:
+https://www.flaticon.es/autores/srip
+By Hilmy Abiyyu A.
+https://www.flaticon.es/autores/noomtah
+https://www.flaticon.es/autores/freepik

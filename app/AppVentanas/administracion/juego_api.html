@@ -1,0 +1,3991 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apiario Feliz - Juego de Apicultura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff9900;
+            --primary-dark: #cc7a00;
+            --secondary: #4a7c59;
+            --secondary-dark: #3a6348;
+            --accent: #ffcc00;
+            --bg-light: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --glass: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.3);
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-md);
+        }
+
+        h1 {
+            background: linear-gradient(45deg, var(--primary-dark), var(--primary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 0;
+            font-weight: 400;
+        }
+
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 1100px;
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 32px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--glass-border);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: row;
+            height: 600px;
+        }
+
+        .apiary-section {
+            flex: 3;
+            background-color: #a8d5ba;
+            position: relative;
+            overflow: hidden;
+            border-right: 2px dashed #8a9a5b;
+            padding-top: 44px;
+            /* espacio para contador de abejas */
+        }
+
+        .store-section {
+            flex: 2;
+            background: #fdfbf7;
+            padding: 20px;
+            overflow-y: auto;
+            border-left: 1px solid #e2e8f0;
+        }
+
+        .stats-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            background: linear-gradient(90deg, var(--secondary-dark), var(--secondary));
+            color: white;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .stat:last-child {
+            border-bottom: none;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            opacity: 0.8;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            background: var(--bg-light);
+            padding: 20px;
+            border-top: 1px solid #e2e8f0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 12px rgba(255, 153, 0, 0.2);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 153, 0, 0.3);
+            filter: brightness(1.1);
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background: #cbd5e1;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .btn-buy {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            box-shadow: 0 4px 12px rgba(74, 124, 89, 0.2);
+        }
+
+        .btn-buy:hover:not(:disabled) {
+            box-shadow: 0 8px 20px rgba(74, 124, 89, 0.3);
+        }
+
+        .btn-plant {
+            background: linear-gradient(135deg, #2d5a27, #1e3a1a);
+            box-shadow: 0 4px 12px rgba(45, 90, 39, 0.2);
+        }
+
+        .store-title {
+            color: var(--text-main);
+            font-weight: 700;
+            font-size: 1.2rem;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .customer-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            /* espacio aumentado entre clientes */
+            margin-bottom: 20px;
+        }
+
+        .customer {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            border-left: 6px solid var(--primary);
+            transition: var(--transition);
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .customer:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .customer-info {
+            flex: 2;
+        }
+
+        .customer-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .customer-type {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .customer-price {
+            flex: 1;
+            font-weight: bold;
+            color: #4a7c59;
+            text-align: right;
+        }
+
+        .customer-time {
+            flex: 1;
+            font-size: 0.9rem;
+            color: #ff9900;
+            text-align: center;
+        }
+
+        .sell-btn {
+            background-color: #ff9900;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sell-btn:hover {
+            background-color: #ffad33;
+        }
+
+        .sell-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .upgrades {
+            margin-top: 20px;
+        }
+
+        .upgrade-item {
+            background-color: white;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .upgrade-info {
+            flex: 2;
+        }
+
+        .upgrade-name {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .upgrade-desc {
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .upgrade-cost {
+            flex: 1;
+            font-weight: bold;
+            color: #4a7c59;
+            text-align: right;
+            margin-right: 12px;
+            /* espacio entre precio y botón */
+        }
+
+        .upgrade-item .sell-btn {
+            margin-left: 8px;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+            width: 100%;
+            height: auto;
+        }
+
+        /* Hide the legacy canvas visually; use hive container instead */
+        .apiary-section canvas {
+            display: none !important;
+        }
+
+        .hives-container {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            padding: 12px;
+            align-items: flex-start;
+        }
+
+        .hive-card {
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            padding: 10px;
+            border-radius: 10px;
+            width: calc(20% - 12px);
+            min-width: 140px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.04);
+        }
+
+        .hive-card h4 {
+            margin: 0 0 6px 0;
+            font-size: 1rem;
+        }
+
+        .hive-progress {
+            height: 10px;
+            background: #eee;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .hive-progress>i {
+            display: block;
+            height: 100%;
+            background: linear-gradient(90deg, #ffcc00, #ff9900);
+        }
+
+        /* Season badge */
+        .season-badge {
+            display: inline-block;
+            padding: 6px 10px;
+            background: linear-gradient(90deg, #6aa77a, #4a7c59);
+            color: #fff;
+            border-radius: 999px;
+            font-weight: 700;
+            margin-top: 8px;
+            cursor: pointer
+        }
+
+
+
+        /* Apiary header */
+        .apiary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+            border-radius: 16px 16px 0 0;
+            margin-bottom: 16px;
+        }
+
+        .apiary-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .bee-counter {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            backdrop-filter: blur(8px);
+        }
+
+        /* Hives grid container */
+        .hives-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0 20px 20px 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        /* Individual hive card */
+        .hive-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            padding: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .hive-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .hive-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .hive-card-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .hive-status {
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .hive-card-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .hive-stat {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hive-stat .label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .hive-stat .value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .hive-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-collect {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #64748b, #475569);
+            padding: 10px 20px;
+        }
+
+        /* Contenedor para indicadores persistentes debajo del canvas */
+        .hidden-indicators {
+            display: flex;
+            gap: 10px;
+            padding: 10px;
+            margin: 12px 16px 6px 16px;
+            align-items: center;
+            justify-content: flex-start;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(0, 0, 0, 0.04);
+        }
+
+        .hidden-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: linear-gradient(180deg, #ffffff, #fbfbfb);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            color: #333;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+            min-width: 96px;
+            justify-content: center;
+        }
+
+        .hidden-indicator .count {
+            background: #ff9900;
+            color: white;
+            padding: 6px 8px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .hidden-indicator .label {
+            font-size: 0.85rem;
+            color: #4a7c59;
+        }
+
+        .hidden-indicator.pulse {
+            animation: pulse 520ms ease;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4a7c59;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            animation: slideIn 0.5s ease-out;
+            max-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.error {
+            background-color: #ff6666;
+        }
+
+        .notification.success {
+            background-color: #4a7c59;
+        }
+
+        .notification.info {
+            background-color: #ff9900;
+        }
+
+        /* Modal overlay y caja (animaciones y scroll interno) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            /* Invisible by default to allow animated transitions via .hidden override below */
+        }
+
+        /* Ensure .modal-overlay.hidden does not use the global .hidden display:none (we want to animate)
+           but keeps it visually hidden and non-interactive */
+        .modal-overlay.hidden {
+            display: block;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 180ms ease, visibility 180ms ease;
+        }
+
+        .modal-overlay:not(.hidden) {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transition: opacity 180ms ease, visibility 180ms ease;
+        }
+
+        .modal {
+            background: white;
+            padding: 18px;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 320px;
+            max-width: 90%;
+            /* Allow modal content to scroll when tall on small viewports */
+            max-height: 86vh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            box-sizing: border-box;
+
+            /* Start state for animation */
+            transform: translateY(6px) scale(0.98);
+            opacity: 0;
+            transition: transform 180ms cubic-bezier(.2, .9, .2, 1), opacity 180ms ease;
+        }
+
+        /* When overlay is visible, animate modal into place */
+        .modal-overlay:not(.hidden) .modal {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        /* Scrollbar styling for compatible browsers */
+        .modal {
+            scrollbar-width: thin;
+            scrollbar-color: #cfe8d6 transparent;
+        }
+
+        .modal::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        .modal::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .modal::-webkit-scrollbar-thumb {
+            background-color: rgba(46, 87, 53, 0.18);
+            border-radius: 10px;
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .modal h3 {
+            margin-bottom: 8px;
+        }
+
+        .modal input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            margin-bottom: 12px;
+        }
+
+        .modal .actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        /* Instrucciones en secciones: cada instrucción como tarjeta sin viñeta */
+        .instructions-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .instruction-section {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f7fbf6;
+            border: 1px solid rgba(74, 124, 89, 0.08);
+        }
+
+        .instruction-icon {
+            font-size: 1.4rem;
+            width: 34px;
+            text-align: center;
+        }
+
+        .instruction-text {
+            font-size: 0.95rem;
+            color: #333;
+            line-height: 1.3;
+        }
+
+        /* Plant selection modal styles */
+        .plant-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .plant-card {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f9fdf9;
+            border: 1px solid rgba(74, 124, 89, 0.08);
+        }
+
+        .plant-card .plant-name {
+            font-weight: 700;
+            color: #2e5735;
+        }
+
+        .plant-card .plant-meta {
+            font-size: 0.85rem;
+            color: #466b4e;
+        }
+
+        .plant-card .plant-points {
+            font-weight: 800;
+            color: #4a7c59;
+        }
+
+        .plant-card .plant-cost {
+            margin-top: 6px;
+            font-weight: 700;
+            color: #2b6b3b;
+        }
+
+        .plant-card .plant-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 4px;
+        }
+
+        /* Modal header styling with animation + tooltip support */
+        .modal {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            max-height: 86vh;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            padding: 8px 10px;
+            background: linear-gradient(90deg, #4a7c59 0%, #6aa77a 100%);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            z-index: 12;
+            color: #fff;
+            /* animation start state */
+            transform: translateY(-6px);
+            opacity: 0;
+            transition: transform 220ms cubic-bezier(.2, .9, .2, 1), opacity 220ms ease, box-shadow 220ms ease;
+        }
+
+        .modal-overlay:not(.hidden) .modal-header {
+            transform: translateY(0);
+            opacity: 1;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+        }
+
+        .modal-drag-handle {
+            flex: 1;
+            height: 10px;
+        }
+
+        .modal-body {
+            padding: 10px;
+            overflow: auto;
+        }
+
+        .modal-btn {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            cursor: pointer;
+            color: #fff;
+            padding: 6px;
+            border-radius: 6px;
+        }
+
+        .modal-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .modal-btn.hidden {
+            display: none;
+        }
+
+        /* Tooltip for modal header icons */
+        .modal-tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.88);
+            color: #fff;
+            padding: 6px 8px;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: opacity 140ms ease, transform 140ms ease;
+            z-index: 2500;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+        }
+
+        /* Planted list styles */
+        .planted-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 56vh;
+            overflow: auto;
+        }
+
+        .planted-item {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            padding: 10px;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+        }
+
+        .planted-item:hover {
+            background: #f6fff5;
+        }
+
+        .planted-item .pi-left {
+            font-size: 1.1rem;
+            width: 36px;
+            text-align: center;
+        }
+
+        .planted-item .pi-body {
+            flex: 1;
+        }
+
+        .planted-item .pi-meta {
+            font-size: 0.9rem;
+            color: #4a7c59;
+        }
+
+        .plant-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .apiary-section {
+                height: 320px;
+                min-height: 320px;
+                border-right: none;
+                border-bottom: 2px dashed #8a9a5b;
+            }
+
+            .store-section {
+                padding: 12px;
+            }
+
+            .stats-panel {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .controls {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .controls .btn {
+                width: 100%;
+                margin: 0;
+            }
+
+            .sell-btn {
+                width: 100%;
+            }
+
+            canvas {
+                width: 100% !important;
+                height: 100% !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .subtitle {
+                font-size: 0.95rem;
+            }
+
+            .game-area {
+                flex-direction: column;
+                height: auto;
+            }
+
+            .apiary-section {
+                order: 1;
+                height: calc((100vw - 40px) * 0.7);
+                /* responsive height */
+                min-height: 220px;
+                border-right: none;
+                border-bottom: 2px dashed #8a9a5b;
+            }
+
+            .store-section {
+                order: 2;
+                padding: 12px;
+                max-height: 320px;
+                overflow-y: auto;
+            }
+
+            .controls {
+                flex-wrap: wrap;
+                padding: 12px;
+            }
+
+            .controls .btn {
+                padding: 16px 18px;
+                font-size: 1.05rem;
+                border-radius: 14px;
+                margin: 6px 4px;
+                min-width: 46%;
+            }
+
+            .stat {
+                flex: 1 1 50%;
+                margin-bottom: 8px;
+            }
+
+            .stat-label {
+                font-size: 0.85rem;
+            }
+
+            .stat-value {
+                font-size: 1.1rem;
+            }
+
+            .bee-counter {
+                display: none;
+            }
+
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: unset;
+                font-size: 0.95rem;
+            }
+
+            .store-title {
+                font-size: 1rem;
+            }
+
+            /* Mobile font and spacing tweaks */
+            body {
+                font-size: 16px;
+            }
+
+            .store-section {
+                font-size: 0.98rem;
+                line-height: 1.2;
+            }
+
+            .customer-name {
+                font-size: 1rem;
+            }
+
+            /* Customer cards more touch-friendly on mobile */
+            .customer {
+                padding: 14px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .customer .customer-price,
+            .customer .customer-time {
+                text-align: left;
+                width: 100%;
+            }
+
+            .upgrades .upgrade-item {
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .upgrade-cost {
+                margin-right: 8px;
+            }
+        }
+
+        /* Version para teléfonos pequeños (≤420px): apilar botones, barra de contadores en columna */
+        @media (max-width: 420px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+
+            .subtitle {
+                font-size: 0.9rem;
+            }
+
+            /* Barra de estadísticas: una por línea para máxima legibilidad */
+            .stats-panel {
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+                padding: 10px;
+                position: sticky;
+                top: 0;
+                z-index: 40;
+            }
+
+            .stat {
+                align-items: center;
+                padding: 8px 6px;
+                justify-content: space-between;
+            }
+
+            .stat-label {
+                font-size: 0.78rem;
+                opacity: 0.95;
+            }
+
+            .stat-value {
+                font-size: 1.6rem;
+                font-weight: 700;
+            }
+
+            /* Botones como anchos completos apilados para mayor confort táctil */
+            .controls {
+                flex-direction: column;
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .controls .btn {
+                width: 100%;
+                margin: 0;
+                border-radius: 12px;
+                padding: 14px 12px;
+                font-size: 1.05rem;
+                min-height: 52px;
+            }
+
+            /* Indicador ocultas menos intrusivo en mobile (mismo estilo pero más pequeño) */
+            .apiary-section canvas {
+                border-radius: 12px;
+            }
+        }
+
+        /* Diseño de tarjetas de colmenas revisado (Carrusel Horizontal) */
+        .hives-grid {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 16px;
+            padding-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            /* Scrollbar styling for improved aesthetics */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(139, 69, 19, 0.5) rgba(255, 255, 255, 0.1);
+        }
+
+        .hives-grid::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .hives-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .hives-grid::-webkit-scrollbar-thumb {
+            background-color: rgba(139, 69, 19, 0.5);
+            border-radius: 4px;
+        }
+
+        .hive-card {
+            flex: 0 0 auto;
+            /* Desktop: ~3 cards visible */
+            width: calc(33.333% - 11px);
+            min-width: 300px;
+            scroll-snap-align: start;
+            /* Original styles */
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 16px;
+            padding: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            .hive-card {
+                /* Mobile: 1 card visible with a peek */
+                width: 85%;
+                min-width: unset;
+                margin-right: 8px;
+            }
+        }
+
+        .hive-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 6px;
+            margin-bottom: 4px;
+        }
+
+        .hive-card-title {
+            font-weight: 700;
+            color: #8B4513;
+            font-size: 1.05rem;
+        }
+
+        .hive-card-body {
+            display: flex;
+            flex-direction: row;
+            /* Horizontal layout */
+            flex-wrap: wrap;
+            /* Allow wrapping if needed on very small screens */
+            gap: 8px;
+            align-items: start;
+        }
+
+        .hive-stat {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background: rgba(255, 255, 255, 0.5);
+            padding: 6px 10px;
+            border-radius: 8px;
+            flex: 1 1 auto;
+            /* Allow flexible growth/shrink */
+            min-width: 80px;
+        }
+
+        .hive-stat .label {
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .hive-stat .value {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .hive-card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .hive-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .hive-btn:active {
+            transform: scale(0.98);
+        }
+
+        .hive-btn.collect {
+            background: linear-gradient(135deg, #FFB347 0%, #FFCC33 100%);
+            color: #5d3a1a;
+            box-shadow: 0 2px 5px rgba(255, 179, 71, 0.3);
+        }
+
+        .hive-btn.details {
+            background: rgba(255, 255, 255, 0.8);
+            color: #4a7c59;
+            border: 1px solid #cce5d0;
+        }
+
+        /* ----------------------- */
+        /* UI PESTAÑAS (TABS)      */
+        /* ----------------------- */
+        .game-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 15px auto;
+            max-width: 1000px;
+            padding: 0 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #5d3a1a;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #146215 0%, #2c9e45 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 10px rgba(44, 158, 69, 0.3);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Update controls grid within tabs */
+        .tab-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            margin-top: auto;
+        }
+
+        .tab-controls .btn {
+            margin: 0;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 id="apiary-title"><i class="fa-solid fa-server" style="color:#FFCC33"></i> Apiario Feliz</h1>
+        <p class="subtitle">Cultiva flores, produce miel y haz crecer tu negocio apícola</p>
+        <div class="season-badge" id="season-badge">Estación: <span id="season-name">Primavera</span></div>
+    </header>
+    <!-- Season info modal -->
+    <div id="season-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn hidden" id="season-modal-back" aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="season-modal-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3 id="season-modal-title">Información de la estación</h3>
+                <div id="season-modal-content" style="margin-top:8px; line-height:1.4; color:#333;">
+                    <!-- Contenido inyectado por JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-container" style="display: block; width: 100%; max-width: 1000px; margin: 0 auto;">
+        <div class="stats-panel" style="margin-bottom: 20px;">
+            <div class="stat">
+                <span class="stat-label">MIEL DISPONIBLE</span>
+                <span id="honey-amount" class="stat-value">0 kg</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">DINERO</span>
+                <span id="money-amount" class="stat-value">COP $0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">COLMENAS</span>
+                <span id="hives-amount" class="stat-value">4</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">PLANTAS</span>
+                <span id="plants-amount" class="stat-value">0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">REPUTACIÓN</span>
+                <span id="reputation-amount" class="stat-value">100</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">PRECIO MIEL</span>
+                <span id="market-price" class="stat-value">COP $0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">MANTENIMIENTO</span>
+                <span id="maintenance-amount" class="stat-value">COP $0</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">DEUDA</span>
+                <span id="loan-balance" class="stat-value">COP $0</span>
+            </div>
+        </div>
+
+        <!-- Navegación de Pestañas -->
+        <div class="game-tabs">
+            <button class="tab-btn active" onclick="switchTab('tab-hives')"><i class="fa-solid fa-server"></i> Mis
+                Colmenas</button>
+            <button class="tab-btn" onclick="switchTab('tab-store')"><i class="fa-solid fa-shop"></i> Tienda y
+                Mejoras</button>
+            <button class="tab-btn" onclick="switchTab('tab-finance')"><i class="fa-solid fa-sack-dollar"></i> Finanzas
+                y Opciones</button>
+        </div>
+        <!-- Tab 1: Colmenas -->
+        <div id="tab-hives" class="tab-content active">
+            <div class="apiary-section">
+                <div class="apiary-header">
+                    <h3><i class="fa-solid fa-server" style="color: #8B4513"></i> Mis Colmenas</h3>
+                    <div class="bee-counter">Abejas Totales: <span id="bee-count">0</span></div>
+                </div>
+                <div id="hives-grid" class="hives-grid">
+                    <!-- Hive cards will be rendered here by JavaScript -->
+                </div>
+                <div id="hidden-indicators" class="hidden-indicators" aria-live="polite"></div>
+            </div>
+
+            <div class="tab-controls">
+                <button id="collect-honey-btn" class="btn"><i class="fa-solid fa-jar"></i> Recoger Miel</button>
+                <button id="plant-flowers-btn" class="btn btn-plant"><i class="fa-solid fa-seedling"></i> Sembrar
+                    Plantas</button>
+                <button id="buy-hive-btn" class="btn btn-buy"><i class="fa-solid fa-plus"></i> Comprar Colmena (COP
+                    $200,000)</button>
+            </div>
+        </div>
+
+        <!-- Tab 2: Tienda y Mejoras -->
+        <div id="tab-store" class="tab-content">
+            <div class="store-section" style="width: 100%; border-right: none;">
+                <h2 class="store-title" id="store-title"><i class="fa-solid fa-shop"></i> Tienda de Miel</h2>
+
+                <div class="customer-list">
+                    <h3><i class="fa-solid fa-users"></i> Clientes esperando:</h3>
+                    <div id="customers-container">
+                        <!-- Los clientes se generarán dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="upgrades">
+                    <h3><i class="fa-solid fa-arrow-trend-up"></i> Mejoras disponibles:</h3>
+                    <div id="upgrades-container">
+                        <!-- Las mejoras se generarán dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Finanzas y Opciones -->
+        <div id="tab-finance" class="tab-content">
+            <div class="store-section" style="width: 100%; min-height: 400px; padding: 20px;">
+                <h2 class="store-title"><i class="fa-solid fa-landmark"></i> Economía de la Granja</h2>
+                <div class="tab-controls" style="margin-top: 20px;">
+                    <button id="buy-apiary-btn" class="btn btn-buy" disabled><i
+                            class="fa-solid fa-map-location-dot"></i> Nuevo Apiario (COP $1,000,000)</button>
+                    <button id="loan-request-btn" class="btn"><i class="fa-solid fa-hand-holding-dollar"></i> Pedir
+                        Préstamo</button>
+                    <button id="loan-pay-btn" class="btn"><i class="fa-solid fa-comment-dollar"></i> Pagar
+                        Préstamo</button>
+                    <button id="open-config-btn" class="btn" style="background:#444;"><i class="fa-solid fa-gear"></i>
+                        Configuración del Juego</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal de Bienvenida -->
+    <div id="welcome-modal" class="modal-overlay hidden" aria-hidden="true" style="z-index: 3000;">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="welcome-modal-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body" style="text-align: center;">
+                <h3 style="color: var(--primary-dark); font-size: 1.4rem; margin-bottom: 15px;">
+                    <i class="fas fa-bug" style="margin-right: 8px;"></i> Módulo Juego de Apicultura
+                </h3>
+                <p style="text-align: left; font-size: 1rem; color: #444; line-height: 1.5; margin-bottom: 20px;">
+                    Bienvenido al módulo de apicultura interactiva. Aquí aprenderás los fundamentos del manejo de
+                    colmenas mientras construyes y administras tu propio apiario virtual. Tomarás decisiones sobre
+                    alimentación, sanidad, producción de miel y expansión del apiario. Cada acción influirá en el
+                    crecimiento y sostenibilidad de tu proyecto apícola.
+                </p>
+                <div style="display: flex; align-items: center; justify-content: flex-start; margin-bottom: 20px;">
+                    <input type="checkbox" id="welcome-checkbox" checked style="width: auto; margin: 0 10px 0 0;" />
+                    <label for="welcome-checkbox" style="font-size: 0.9rem; color: #666; cursor: pointer;">No mostrar
+                        este mensaje de nuevo</label>
+                </div>
+                <button id="welcome-modal-btn" class="btn" style="width: 100%;">
+                    ¡Comenzar a jugar!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de instrucciones (mostradas al inicio y accesibles desde Configuración) -->
+    <div id="instructions-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn hidden" id="instructions-modal-back"
+                    aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="instructions-modal-close-top"
+                    aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3><i class="fa-solid fa-book-open" style="margin-right:8px;"></i>Instrucciones del juego</h3>
+                <div class="instructions-sections">
+                    <div class="instruction-section">
+                        <div class="instruction-icon"><i class="fa-solid fa-jar" style="color: #D2691E;"></i></div>
+                        <div class="instruction-text"><strong>Recoge miel</strong> de las colmenas cuando estén llenas
+                            (aparecerán alertas si la dejas demasiado tiempo).</div>
+                    </div>
+                    <div class="instruction-section">
+                        <div class="instruction-icon"><i class="fa-solid fa-seedling" style="color: #2c9e45;"></i></div>
+                        <div class="instruction-text"><strong>Siembra plantas</strong> para aumentar la producción de
+                            miel de tus colmenas.</div>
+                    </div>
+                    <div class="instruction-section">
+                        <div class="instruction-icon"><i class="fa-solid fa-shop" style="color: #4a7c59;"></i></div>
+                        <div class="instruction-text"><strong>Vende miel</strong> a los clientes en la tienda (cada
+                            cliente paga un precio diferente).</div>
+                    </div>
+                    <div class="instruction-section">
+                        <div class="instruction-icon"><i class="fa-solid fa-server" style="color: #FFCC33;"></i></div>
+                        <div class="instruction-text"><strong>Compra más colmenas</strong> para aumentar tu capacidad de
+                            producción
+                            de miel.</div>
+                    </div>
+                    <div class="instruction-section">
+                        <div class="instruction-icon"><i class="fa-solid fa-piggy-bank" style="color: #FF9966;"></i>
+                        </div>
+                        <div class="instruction-text"><strong>Ahorra dinero</strong> para comprar un nuevo apiario y
+                            expandir tu negocio.</div>
+                    </div>
+                    <div class="instruction-section">
+                        <div class="instruction-icon"><i class="fa-solid fa-stopwatch" style="color: #d35400;"></i>
+                        </div>
+                        <div class="instruction-text">Los clientes esperan un tiempo limitado para comprar tu miel en la
+                            tienda de abejas.
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de configuración (unifica renombrado, guardar y export/import) -->
+    <div id="config-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn hidden" id="config-modal-back" aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="config-modal-close-top" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3>Configuración</h3>
+                <label style="font-size:0.9rem;color:#444;">Nombre del apiario</label>
+                <input id="config-apiary-input" placeholder="Nombre del apiario" />
+                <label style="font-size:0.9rem;color:#444;">Nombre de la tienda</label>
+                <input id="config-store-input" placeholder="Nombre de la tienda" />
+                <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap;">
+                    <button id="config-save-names" class="btn">Guardar nombres</button>
+                    <button id="config-save-progress" class="btn">Guardar progreso</button>
+                    <button id="config-export" class="btn">Exportar (.json)</button>
+                    <button id="config-import" class="btn">Importar (.json)</button>
+                    <button id="config-show-instructions" class="btn">Ver instrucciones</button>
+                    <button id="config-open-planted" class="btn">Ver plantas sembradas</button>
+                </div>
+
+                <input type="file" id="config-import-file" accept=".json" style="display:none;" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal selección de plantas -->
+    <div id="plant-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn hidden" id="plant-modal-back" aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="plant-modal-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3>Sembrar Plantas</h3>
+                <div style="display:flex; gap:8px; margin-bottom:8px;">
+                    <button id="plant-show-planted" class="btn">Ver plantas sembradas</button>
+                </div>
+                <div id="plant-list" class="plant-grid" style="margin-top:8px;">
+                    <!-- Plant cards injected por JS -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: lista de plantas sembradas -->
+    <div id="planted-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn" id="planted-modal-back" aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="planted-modal-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3>Plantas sembradas</h3>
+                <div id="planted-list" class="planted-list" style="margin-top:8px;">
+                    <!-- Lista de plantas plantadas será renderizada aquí -->
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: información de planta individual -->
+    <div id="plant-info-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn" id="plant-info-modal-back" aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="plant-info-modal-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3 id="plant-info-title">Información de la planta</h3>
+                <div id="plant-info-content" style="margin-top:8px;">
+                    <!-- Contenido inyectado por JS -->
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Modal: préstamos -->
+        <div id="loan-modal" class="modal-overlay hidden" aria-hidden="true">
+            <div class="modal">
+                <div class="modal-header">
+                    <button class="modal-btn modal-back-btn hidden" id="loan-modal-back" aria-label="Volver">←</button>
+                    <div class="modal-drag-handle" aria-hidden="true"></div>
+                    <button class="modal-btn modal-close-btn" id="loan-modal-close" aria-label="Cerrar">✕</button>
+                </div>
+                <div class="modal-body">
+                    <h3 id="loan-modal-title">Préstamo</h3>
+                    <div id="loan-request-section">
+                        <label>Monto (unidades)</label>
+                        <input id="loan-amount-input" type="number" placeholder="500" />
+                        <label>Meses</label>
+                        <input id="loan-months-input" type="number" placeholder="12" />
+                        <label>Interés (dec)</label>
+                        <input id="loan-interest-input" type="number" step="0.01" placeholder="0.12" />
+                        <div style="display:flex;gap:8px;margin-top:10px;">
+                            <button id="loan-request-submit" class="btn">Solicitar préstamo</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div id="loan-list-section" style="margin-bottom:12px;">
+                        <h4>Préstamos activos</h4>
+                        <div id="loan-list" style="display:flex;flex-direction:column;gap:8px;">
+                            <!-- Lista de préstamos será renderizada aquí -->
+                        </div>
+                    </div>
+                    <div id="loan-pay-section">
+                        <label>Pagar cuánto (unidades)</label>
+                        <input id="loan-pay-amount" type="number" placeholder="100" />
+                        <div style="display:flex;gap:8px;margin-top:10px;">
+                            <button id="loan-pay-submit" class="btn">Pagar</button>
+                        </div>
+                    </div>
+                    <hr />
+                    <div id="loan-history-section">
+                        <h4>Historial</h4>
+                        <div id="loan-history"
+                            style="max-height:180px;overflow:auto;padding:6px;background:#fbfbfb;border-radius:6px;border:1px solid rgba(0,0,0,0.04);">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: detalle de colmena (abre al tocar una tarjeta) -->
+    <div id="hive-modal" class="modal-overlay hidden" aria-hidden="true">
+        <div class="modal">
+            <div class="modal-header">
+                <button class="modal-btn modal-back-btn hidden" id="hive-modal-back" aria-label="Volver">←</button>
+                <div class="modal-drag-handle" aria-hidden="true"></div>
+                <button class="modal-btn modal-close-btn" id="hive-modal-close" aria-label="Cerrar">✕</button>
+            </div>
+            <div class="modal-body">
+                <h3 id="hive-modal-title">Colmena</h3>
+                <div id="hive-modal-content" style="margin-top:8px;">
+                    <!-- Contenido inyectado por JS -->
+                </div>
+                <div style="display:flex;gap:8px;margin-top:12px;justify-content:flex-end;">
+                    <button id="hive-collect-btn" class="btn">Recolectar colmena</button>
+                    <button id="hive-close-btn" class="btn">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Pestañas (Tabs) Control
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            let clickedBtn = Array.from(document.querySelectorAll('.tab-btn')).find(
+                btn => btn.getAttribute('onclick').includes(tabId)
+            );
+            if (clickedBtn) clickedBtn.classList.add('active');
+        }
+
+        // Variables del juego
+        const COP_MULTIPLIER = 1000; // 1 unit = 1,000 COP for display
+
+        function formatCOP(amount) {
+            return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(Math.round(amount));
+        }
+
+        // Debug: indicar que el script se cargó
+        console.log('[Juego] script cargado');
+
+        // Manejador global de errores para capturar problemas silenciosos
+        window.addEventListener('error', function (e) {
+            try {
+                // Filtrar y suprimir errores originados por scripts inyectados (p.ej. spoofer.js)
+                const msg = (e && (e.message || '') + '') || '';
+                const src = (e && e.filename) || '';
+                const suspicious = /spoofer|spoof|Blocked a frame|Failed to read a named property|Failed to read a property|dispatchEvent/i;
+                if (suspicious.test(msg) || suspicious.test(src)) {
+                    console.warn('[Juego] Supressed external/script error:', msg || src);
+                    return; // avoid noisy console.error for external extension errors
+                }
+                console.error('[Juego] Error global capturado:', e.error || e.message || e);
+                // Mostrar notificación visible al usuario (si showNotification está disponible)
+                try { if (typeof showNotification === 'function') showNotification('Error: ' + (e.message || 'Error inesperado'), 'error'); } catch (inner) { /* ignore */ }
+            } catch (err) {
+                console.error('[Juego] Error al manejar error global:', err);
+            }
+        });
+
+        // Suprimir promesas no manejadas generadas por extensiones inyectadas
+        window.addEventListener('unhandledrejection', function (ev) {
+            try {
+                const reason = ev && ev.reason;
+                const msg = (reason && (reason.message || reason.toString())) || String(reason || '');
+                const suspicious = /spoofer|spoof|Blocked a frame|Failed to read a named property|Failed to read a property|dispatchEvent/i;
+                if (suspicious.test(msg)) {
+                    console.warn('[Juego] Supressed external unhandled rejection:', msg);
+                    try { ev.preventDefault && ev.preventDefault(); } catch (e) { }
+                    return;
+                }
+                console.error('[Juego] Unhandled rejection:', reason);
+            } catch (err) { console.error('[Juego] Error handling unhandledrejection:', err); }
+        });
+
+        // removeSuspiciousScripts removed
+
+        let gameState = {
+            honey: 0,
+            money: 100,
+            hives: 4,
+            plants: 0,
+            bees: 0,
+            customers: [],
+            upgrades: [],
+            apiaries: 1,
+            honeyProductionRate: 0.1, // Miel por colmena por segundo
+            plantBoost: 0.05, // Incremento por planta
+            reputation: 100,
+            apiaryName: '🐝 Apiario Feliz',
+            storeName: '🏪 Tienda de Miel',
+            lastUpdate: Date.now()
+            , loanHistory: []
+        };
+
+        // Control de frecuencia de aparición de clientes
+        let lastCustomerSpawn = 0;
+        const minCustomerSpawnInterval = 7000; // ms mínimo entre spawns (7s)
+
+        // Mercado, estaciones y economía avanzada
+        gameState.marketMultiplier = 1.0; // afecta precio de venta
+        gameState.baseUnitPrice = 12; // unidad base (unidades antes de COP_MULTIPLIER)
+        gameState.season = 'Primavera';
+        gameState.seasonIndex = 0;
+        gameState.seasons = ['Primavera', 'Verano', 'Otoño', 'Invierno'];
+        gameState.maintenanceCost = 5; // unidades (se descontarán periódicamente)
+        gameState.loans = []; // { balance, monthlyPayment, remainingMonths, interest }
+        gameState.seasonModifiers = {
+            'Primavera': { production: 1.05, customer: 1.0, price: 1.0 },
+            'Verano': { production: 1.15, customer: 1.1, price: 1.05 },
+            'Otoño': { production: 0.95, customer: 0.9, price: 0.95 },
+            'Invierno': { production: 0.8, customer: 0.7, price: 0.9 }
+        };
+
+        // Elementos del DOM
+        const honeyAmountEl = document.getElementById('honey-amount');
+        const moneyAmountEl = document.getElementById('money-amount');
+        const hivesAmountEl = document.getElementById('hives-amount');
+        const plantsAmountEl = document.getElementById('plants-amount');
+        const beeCountEl = document.getElementById('bee-count');
+        const customersContainer = document.getElementById('customers-container');
+        const upgradesContainer = document.getElementById('upgrades-container');
+        const collectHoneyBtn = document.getElementById('collect-honey-btn');
+        const plantFlowersBtn = document.getElementById('plant-flowers-btn');
+        const buyHiveBtn = document.getElementById('buy-hive-btn');
+        const buyApiaryBtn = document.getElementById('buy-apiary-btn');
+        const reputationAmountEl = document.getElementById('reputation-amount');
+        const apiaryTitleEl = document.getElementById('apiary-title');
+        const storeTitleEl = document.getElementById('store-title');
+        const openConfigBtn = document.getElementById('open-config-btn');
+
+        // Configuración del canvas (ELIMINADO)
+        // const canvas = document.getElementById('gameCanvas');
+        // const ctx = canvas.getContext('2d');
+
+        // Render hive cards function
+        function renderHivesCards() {
+            const container = document.getElementById('hives-grid');
+            if (!container) return;
+
+            container.innerHTML = hives.map((hive, idx) => {
+                const totalBees = Math.floor((hive.baseBeeCount || 40000) * (hive.prodFactor || 0.8));
+                const honeyLoaded = hive.honey || 0;
+                const maxHoney = hive.maxHoney || 10;
+                const prodPercent = Math.floor((hive.prodFactor || 0.8) * 100);
+
+                return `
+                    <div class="hive-card">
+                        <div class="hive-card-header">
+                            <h4><i class="fa-solid fa-server" style="color: #8B4513"></i> Colmena #${idx + 1}</h4>
+                            <span class="hive-status">Activa</span>
+                        </div>
+                        <div class="hive-card-body">
+                            <div class="hive-stat">
+                                <span class="label">Abejas</span>
+                                <span class="value">${totalBees.toLocaleString('es-CO')}</span>
+                            </div>
+                            <div class="hive-stat">
+                                <span class="label">Miel</span>
+                                <span class="value">${honeyLoaded.toFixed(1)} / ${maxHoney} kg</span>
+                            </div>
+                            <div class="hive-stat">
+                                <span class="label">Producción</span>
+                                <span class="value">${prodPercent}%</span>
+                            </div>
+                        </div>
+                        <div class="hive-card-actions">
+                            <button class="btn btn-collect" onclick="collectHiveHoney(${idx})">
+                                Recolectar
+                            </button>
+                            <button class="btn btn-info" onclick="openHiveDetails(${idx})">
+                                Detalles
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Collect honey from a specific hive
+        function collectHiveHoney(idx) {
+            try {
+                if (idx >= 0 && idx < hives.length) {
+                    const hive = hives[idx];
+                    if (hive.honey > 0) {
+                        const collected = hive.honey;
+                        gameState.honey += collected;
+                        hive.honey = 0;
+                        showNotification(`¡Recolectaste ${collected.toFixed(1)} kg de miel!`, 'success');
+                        updateStats();
+                        renderHivesCards();
+                    } else {
+                        showNotification('Esta colmena no tiene miel suficiente.', 'info');
+                    }
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        // Open hive details modal
+        function openHiveDetails(idx) {
+            try {
+                if (idx >= 0 && idx < hives.length) {
+                    const hive = hives[idx];
+                    const modal = document.getElementById('hive-modal');
+                    const title = document.getElementById('hive-modal-title');
+                    const content = document.getElementById('hive-modal-content');
+                    const collectBtn = document.getElementById('hive-collect-btn');
+                    const closeBtn = document.getElementById('hive-close-btn');
+                    const closeIcon = document.getElementById('hive-modal-close');
+
+                    if (modal && title && content) {
+                        title.textContent = `Colmena #${idx + 1}`;
+
+                        const beeCount = Math.floor((hive.baseBeeCount || 40000) * (hive.prodFactor || 0.8));
+                        const prodPercent = Math.floor((hive.prodFactor || 0.8) * 100);
+
+                        content.innerHTML = `
+                            <p><strong>Población:</strong> ${beeCount.toLocaleString('es-CO')} abejas</p>
+                            <p><strong>Miel almacenada:</strong> ${hive.honey.toFixed(1)} / ${hive.maxHoney} kg</p>
+                            <p><strong>Eficiencia:</strong> ${prodPercent}%</p>
+                            <p><strong>Nivel:</strong> ${hive.level || 1}</p>
+                        `;
+
+                        // Setup buttons
+                        if (collectBtn) {
+                            collectBtn.onclick = () => {
+                                collectHiveHoney(idx);
+                                modal.classList.add('hidden');
+                            };
+                            if (hive.honey <= 0) collectBtn.disabled = true;
+                            else collectBtn.disabled = false;
+                        }
+
+                        const closeModal = () => modal.classList.add('hidden');
+                        if (closeBtn) closeBtn.onclick = closeModal;
+                        if (closeIcon) closeIcon.onclick = closeModal;
+
+                        modal.classList.remove('hidden');
+                    }
+                }
+            } catch (e) { console.error('[Juego] openHiveDetails error', e); }
+        }
+        // Pan handlers removed
+
+        // Clientes disponibles
+        const customerTypes = [
+            { name: "Juan", type: "Persona", basePrice: 10, time: 30, color: "#FF9966" },
+            { name: "Doña María", type: "Tienda local", basePrice: 15, time: 45, color: "#66CC99" },
+            { name: "Restaurante Luna", type: "Restaurante", basePrice: 20, time: 60, color: "#6699FF" },
+            { name: "Mercado Orgánico", type: "Supermercado", basePrice: 25, time: 75, color: "#FF66CC" },
+            { name: "Exportadora Dulce", type: "Empresa", basePrice: 30, time: 90, color: "#FFCC66" }
+        ];
+
+        // Mejoras disponibles
+        const availableUpgrades = [
+            { id: 1, name: "Abejas Reinas", description: "Aumenta producción en 20%", cost: 150, effect: "production", value: 1.2 },
+            { id: 2, name: "Equipo Mejorado", description: "Recolección más eficiente", cost: 200, effect: "collection", value: 1.5 },
+            { id: 3, name: "Flores Exóticas", description: "Plantas producen más", cost: 250, effect: "plantBoost", value: 1.3 },
+            { id: 4, name: "Envases Premium", description: "Aumenta precio de venta 25%", cost: 300, effect: "price", value: 1.25 }
+        ];
+
+        // Elementos del juego para dibujar
+        let hives = [];
+        let flowers = [];
+        let bees = [];
+        let floatingBubbles = []; // animated +n indicators for hidden colmenas
+        let lastAutoCollectTime = 0;
+        let lastHiveProduction = 0; // per-hive production (kg/s) for display
+        // Viewport panning for small screens
+        let viewOffset = { x: 0, y: 0 };
+        let isPanning = false;
+        let panLast = { x: 0, y: 0 };
+        // Bandera para indicar que el juego ha inicializado completamente
+        let gameReady = false;
+
+        // Inicializar elementos del juego
+        function initGameElements() {
+            // Inicializar colmenas (solo mostrar hasta 6 en el canvas)
+            hives = [];
+            const visibleHives = Math.min(gameState.hives || 0, 6);
+            for (let i = 0; i < visibleHives; i++) {
+                hives.push({
+                    x: 0, y: 0, // se posicionarán mediante layoutHives()
+                    width: 90,
+                    height: 70,
+                    honey: 0,
+                    displayHoney: 0,
+                    maxHoney: 10,
+                    color: "#8B4513",
+                    roofColor: "#A0522D",
+                    doorColor: "#D2691E",
+                    bees: Math.floor(Math.random() * 3) + 1,
+                    baseBeeCount: Math.floor(30000 + Math.random() * 30000),
+                    // Factor de producción individual (0.6 - 1.0) para variabilidad entre colmenas
+                    prodFactor: 0.6 + Math.random() * 0.4
+                });
+            }
+
+            // Distribuir colmenas estéticamente
+            // layoutHives(); removed
+            // Ajustar contador de colmenas real según estado
+            gameState.hives = gameState.hives || visibleHives;
+
+            // Asegurarse de respetar la capacidad visible inicial
+            try { if (typeof refreshVisibleHives === 'function') refreshVisibleHives(); } catch (e) { }
+
+            // Inicializar flores removed (visual only)
+            flowers = [];
+            // layoutFlowers(); removed
+
+            // Árboles eliminados para versión móvil: no se dibujan detrás de las colmenas
+            // (Se evita añadir elementos decorativos que saturen el canvas)
+
+            // Inicializar abejas
+            bees = [];
+            // Compute large-scale bee population per hive based on baseBeeCount, prodFactor and season
+            computeBeePopulation();
+
+            // Actualizar contador de abejas
+            if (beeCountEl) {
+                beeCountEl.textContent = gameState.bees.toLocaleString('es-CO');
+            }
+
+            // Actualizar indicadores persistentes debajo del canvas
+            updateHiddenIndicatorsDisplay();
+        }
+
+        // Crear una flor (simplificada para que sean círculos con tallo)
+        function createFlower(index) {
+            const margin = 40;
+            const x = typeof index === 'number' && gameState.plants > 0
+                ? margin + ((canvas.width - margin * 2) * (index + 0.5) / Math.max(1, gameState.plants)) + (Math.random() * 40 - 20)
+                : Math.random() * (canvas.width - 100) + 50;
+            const fieldY = canvas.height - 40;
+
+            return {
+                x: x,
+                y: fieldY - (10 + Math.random() * 15),
+                size: 6 + Math.random() * 6,
+                color: `hsl(${Math.random() * 60 + 100}, 50%, 40%)`,
+                petals: 0,
+                stemHeight: 12 + Math.random() * 8,
+                sway: 0,
+                swaySpeed: 0
+            };
+        }
+
+        // Recolocar flores según cantidad y tamaño del canvas
+        function layoutFlowers() {
+            const margin = 40;
+            const count = flowers.length || 1;
+            for (let i = 0; i < flowers.length; i++) {
+                const x = margin + ((canvas.width - margin * 2) * (i + 0.5) / Math.max(1, count)) + (Math.random() * 20 - 10);
+                flowers[i].x = x;
+                flowers[i].y = canvas.height - 40 - (5 + Math.random() * 10);
+            }
+        }
+
+        // Calcular población de abejas basada en colmenas y factores
+        function computeBeePopulation() {
+            try {
+                let totalBees = 0;
+                const seasonMod = (gameState.seasonModifiers && gameState.seasonModifiers[gameState.season] && gameState.seasonModifiers[gameState.season].production) || 1;
+
+                for (let i = 0; i < hives.length; i++) {
+                    const hive = hives[i];
+                    const hiveBees = Math.floor((hive.baseBeeCount || 40000) * (hive.prodFactor || 0.8) * seasonMod);
+                    totalBees += hiveBees;
+                }
+
+                gameState.bees = totalBees;
+            } catch (err) {
+                console.warn('[Juego] computeBeePopulation error:', err);
+                gameState.bees = gameState.hives * 40000; // fallback
+            }
+        }
+
+        // Crear una abeja
+        function createBee(hive) {
+            return {
+                x: hive.x + hive.width / 2,
+                y: hive.y + hive.height / 2,
+                targetX: hive.x + hive.width / 2,
+                targetY: hive.y + hive.height / 2,
+                size: 8,
+                color: "#FFCC00",
+                wingColor: "rgba(255, 255, 255, 0.8)",
+                speed: 1 + Math.random() * 2,
+                isFlying: false,
+                hive: hive,
+                flower: null,
+                hasPollen: false,
+                wingFlap: 0,
+                wingFlapSpeed: 0.2 + Math.random() * 0.3
+            };
+        }
+
+        function createFloatingBubble(text, x, y) {
+            // Aparece a la derecha del canvas, apilándose verticalmente para evitar solapamiento
+            const baseX = canvas.width - 80;
+            const baseY = 110 + (floatingBubbles.length * 30);
+            floatingBubbles.push({
+                x: x || baseX,
+                y: y || baseY + (Math.random() * 10 - 5),
+                text: text,
+                opacity: 1,
+                vy: 18 + Math.random() * 10, // subir más despacio
+                ttl: 3000 + Math.random() * 2000
+            });
+
+            // Also update the persistent DOM indicators below the canvas
+            updateHiddenIndicatorsDisplay();
+            // animate the indicator briefly to draw attention
+            if (text && text.includes('+')) animateIndicator('hives');
+        }
+
+        function updateHiddenIndicatorsDisplay() {
+            try {
+                const container = document.getElementById('hidden-indicators');
+                if (!container) return;
+                const visiblePlants = Math.min(flowers.length, 5);
+                const hiddenPlants = Math.max(0, (gameState.plants || 0) - visiblePlants);
+                const visibleCount = hives.length;
+                const hiddenHives = Math.max(0, (gameState.hives || 0) - visibleCount);
+
+                // Build indicators
+                container.innerHTML = '';
+
+                const createIndicator = (key, count, label) => {
+                    const el = document.createElement('div');
+                    el.className = 'hidden-indicator';
+                    el.id = `hidden-${key}`;
+
+                    const countEl = document.createElement('div');
+                    countEl.className = 'count';
+                    countEl.textContent = `+${count}`;
+
+                    const labelEl = document.createElement('div');
+                    labelEl.className = 'label';
+                    labelEl.textContent = label;
+
+                    el.appendChild(countEl);
+                    el.appendChild(labelEl);
+
+                    return el;
+                };
+
+                // Show hives indicator (always present for clarity)
+                const hivesEl = createIndicator('hives', hiddenHives, 'colmenas ocultas');
+                container.appendChild(hivesEl);
+
+                // Show plants indicator
+                const plantsEl = createIndicator('plants', hiddenPlants, 'plantas ocultas');
+                container.appendChild(plantsEl);
+
+                // If there was a new addition, pulse that indicator (handled where events occur)
+            } catch (err) {
+                console.warn('[Juego] updateHiddenIndicatorsDisplay error', err);
+            }
+        }
+
+        function animateIndicator(key) {
+            try {
+                const el = document.getElementById(`hidden-${key}`);
+                if (!el) return;
+                el.classList.remove('pulse');
+                // trigger reflow to restart animation
+                void el.offsetWidth;
+                el.classList.add('pulse');
+                setTimeout(() => el.classList.remove('pulse'), 600);
+            } catch (err) { console.warn('[Juego] animateIndicator error', err); }
+        }
+
+        // Programar llenado de colmenas en pasos pequeños y aleatorios (entre visibles)
+        function scheduleHiveFills(count) {
+            if (!count || count <= 0) return;
+            let remaining = count;
+            const tick = () => {
+                if (remaining <= 0) return;
+                // intentar llenar una colmena visible aleatoria que no esté llena
+                const candidates = hives.filter(h => h.honey < h.maxHoney);
+                if (candidates.length > 0) {
+                    const idx = Math.floor(Math.random() * candidates.length);
+                    const hive = candidates[idx];
+                    // añadir sólo una fracción aún más pequeña y aleatoria para evitar llenados instantáneos
+                    const add = hive.maxHoney * (0.02 + Math.random() * 0.06); // 2% - 8%
+                    hive.honey = Math.min(hive.maxHoney, hive.honey + add);
+                } else {
+                    // si no hay colmenas visibles para llenar, agregar al inventario
+                    gameState.honey += 0.2 + Math.random() * 0.8;
+                }
+
+                remaining--;
+                updateStats();
+                saveGameToLocalStorage(false);
+
+                // Si quedan, programar siguiente relleno con delay más largo para ralentizar el proceso
+                if (remaining > 0) {
+                    setTimeout(tick, 900 + Math.random() * 1600); // 900-2500ms entre llenados
+                }
+            };
+            // arrancar la primera iteración un poco después para que se vea la animación
+            setTimeout(tick, 500 + Math.random() * 600);
+        }
+
+        // Generar un cliente aleatorio
+        function generateCustomer() {
+            try {
+                if (gameState.customers.length >= 4) return; // Máximo 4 clientes a la vez
+
+                const now = Date.now();
+                // Respetar intervalo mínimo entre spawns
+                if (now - lastCustomerSpawn < minCustomerSpawnInterval) {
+                    // volver a intentar más tarde
+                    setTimeout(generateCustomer, minCustomerSpawnInterval - (now - lastCustomerSpawn));
+                    return;
+                }
+
+                // Probabilidad de que llegue un cliente basada en reputación, estación y precio
+                const seasonCustomer = (gameState.seasonModifiers && gameState.seasonModifiers[gameState.season] && gameState.seasonModifiers[gameState.season].customer) || 1;
+                const priceEffect = 1 / (gameState.marketMultiplier || 1); // precios altos reducen demanda
+                const chance = Math.max(0.03, (gameState.reputation / 100) * 0.8 * seasonCustomer * priceEffect);
+                if (Math.random() > chance) {
+                    // intentar de nuevo más tarde
+                    setTimeout(generateCustomer, 4000 + Math.random() * 6000);
+                    return;
+                }
+
+                const type = customerTypes[Math.floor(Math.random() * customerTypes.length)];
+                const timeVariation = Math.floor(Math.random() * 21) - 10; // -10 a +10 segundos
+                const priceVariation = Math.floor(Math.random() * 6) - 2; // -2 a +3
+
+                const customer = {
+                    id: Date.now(),
+                    name: type.name,
+                    type: type.type,
+                    color: type.color,
+                    price: Math.max(5, type.basePrice + priceVariation), // base units (will display in COP)
+                    maxTime: Math.max(20, type.time + timeVariation),
+                    timeLeft: Math.max(20, type.time + timeVariation),
+                    honeyRequested: 1 + Math.floor(Math.random() * 3)
+                };
+
+                gameState.customers.push(customer);
+                lastCustomerSpawn = Date.now();
+                updateCustomersDisplay();
+            } catch (err) {
+                console.error('[Juego] generateCustomer error:', err);
+            }
+        }
+
+        // Actualizar la lista de clientes en la UI
+        function updateCustomersDisplay() {
+            customersContainer.innerHTML = "";
+
+            if (gameState.customers.length === 0) {
+                customersContainer.innerHTML = "<p style='text-align: center; color: #666;'>Esperando clientes...</p>";
+                return;
+            }
+
+            gameState.customers.forEach(customer => {
+                const customerEl = document.createElement('div');
+                customerEl.className = 'customer';
+                customerEl.style.borderLeftColor = customer.color;
+
+                const timePercent = (customer.timeLeft / customer.maxTime) * 100;
+                const timeColor = timePercent > 50 ? "#4CAF50" : timePercent > 20 ? "#FF9800" : "#F44336";
+
+                customerEl.innerHTML = `
+                    <div class="customer-info">
+                        <div class="customer-name">${customer.name}</div>
+                        <div class="customer-type">${customer.type} - Quiere ${customer.honeyRequested} kg</div>
+                        <div style="margin-top: 5px; height: 5px; background-color: #eee; border-radius: 3px;">
+                            <div style="height: 100%; width: ${timePercent}%; background-color: ${timeColor}; border-radius: 3px;"></div>
+                        </div>
+                    </div>
+                    <div class="customer-price">${formatCOP(customer.price * COP_MULTIPLIER)}/kg</div>
+                    <div class="customer-time">${Math.ceil(customer.timeLeft)}s</div>
+                    <button class="sell-btn" data-id="${customer.id}" ${gameState.honey < customer.honeyRequested ? 'disabled' : ''}>
+                        Vender
+                    </button>
+                `;
+
+                customersContainer.appendChild(customerEl);
+            });
+
+            // Añadir event listeners a los botones de vender
+            document.querySelectorAll('.sell-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const customerId = parseInt(this.getAttribute('data-id'));
+                    sellHoneyToCustomer(customerId);
+                });
+            });
+        }
+
+        // Actualizar las mejoras en la UI
+        function updateUpgradesDisplay() {
+            upgradesContainer.innerHTML = "";
+
+            availableUpgrades.forEach(upgrade => {
+                // Verificar si ya se compró esta mejora
+                const purchased = gameState.upgrades.includes(upgrade.id);
+
+                const upgradeEl = document.createElement('div');
+                upgradeEl.className = 'upgrade-item';
+
+                upgradeEl.innerHTML = `
+                    <div class="upgrade-info">
+                        <div class="upgrade-name">${upgrade.name}</div>
+                        <div class="upgrade-desc">${upgrade.description}</div>
+                    </div>
+                    <div class="upgrade-cost">${formatCOP(upgrade.cost * COP_MULTIPLIER)}</div>
+                    <button class="sell-btn" data-id="${upgrade.id}" ${purchased || gameState.money < upgrade.cost ? 'disabled' : ''}>
+                        ${purchased ? 'Comprado' : 'Comprar'}
+                    </button>
+                `;
+
+                upgradesContainer.appendChild(upgradeEl);
+            });
+
+            // Añadir event listeners a los botones de comprar mejoras
+            document.querySelectorAll('.upgrade-item .sell-btn').forEach((btn, index) => {
+                btn.addEventListener('click', function () {
+                    const upgradeId = parseInt(this.getAttribute('data-id'));
+                    buyUpgrade(upgradeId);
+                });
+            });
+        }
+
+        // Vender miel a un cliente
+        function sellHoneyToCustomer(customerId) {
+            const customerIndex = gameState.customers.findIndex(c => c.id === customerId);
+            if (customerIndex === -1) return;
+
+            const customer = gameState.customers[customerIndex];
+
+            if (gameState.honey < customer.honeyRequested) {
+                showNotification("No tienes suficiente miel para vender", "error");
+                return;
+            }
+
+            // Calcular precio con mejoras
+            let priceMultiplier = 1;
+            if (gameState.upgrades.includes(4)) { // Envases Premium
+                priceMultiplier = availableUpgrades.find(u => u.id === 4).value;
+            }
+            // Apply market multiplier and seasonal price modifier
+            const seasonPriceMod = (gameState.seasonModifiers && gameState.seasonModifiers[gameState.season] && gameState.seasonModifiers[gameState.season].price) || 1;
+            const totalPrice = customer.price * customer.honeyRequested * priceMultiplier * (gameState.marketMultiplier || 1) * seasonPriceMod; // base units
+
+            gameState.honey -= customer.honeyRequested;
+            gameState.money += totalPrice;
+            gameState.customers.splice(customerIndex, 1);
+            gameState.reputation = Math.min(100, gameState.reputation + 1);
+
+            updateStats();
+            updateCustomersDisplay();
+            showNotification(`¡Vendiste ${customer.honeyRequested} kg a ${customer.name} por ${formatCOP(totalPrice * COP_MULTIPLIER)}! (reputación +1)`, "success");
+            saveGameToLocalStorage(false);
+            // Generar un nuevo cliente después de un tiempo (espera más)
+            setTimeout(generateCustomer, Math.random() * 5000 + 5000);
+        }
+
+        // Comprar una mejora
+        function buyUpgrade(upgradeId) {
+            const upgrade = availableUpgrades.find(u => u.id === upgradeId);
+            if (!upgrade) return;
+
+            if (gameState.money < upgrade.cost) {
+                showNotification("No tienes suficiente dinero", "error");
+                return;
+            }
+
+            if (gameState.upgrades.includes(upgradeId)) {
+                showNotification("Ya tienes esta mejora", "error");
+                return;
+            }
+
+            gameState.money -= upgrade.cost;
+            gameState.upgrades.push(upgradeId);
+
+            // Aplicar efecto de la mejora
+            switch (upgrade.effect) {
+                case "production":
+                    gameState.honeyProductionRate *= upgrade.value;
+                    break;
+                case "collection":
+                    // Se aplica al recoger miel
+                    break;
+                case "plantBoost":
+                    gameState.plantBoost *= upgrade.value;
+                    break;
+                case "price":
+                    // Se aplica al vender
+                    break;
+            }
+
+            updateStats();
+            updateUpgradesDisplay();
+            showNotification(`¡Mejora "${upgrade.name}" comprada por ${formatCOP(upgrade.cost * COP_MULTIPLIER)}!`, "success");
+            saveGameToLocalStorage(false);
+        }
+
+        // Actualizar estadísticas en la UI
+        function updateStats() {
+            honeyAmountEl.textContent = `${gameState.honey.toFixed(1)} kg`;
+            moneyAmountEl.textContent = formatCOP(gameState.money * COP_MULTIPLIER);
+            hivesAmountEl.textContent = gameState.hives;
+            plantsAmountEl.textContent = gameState.plants;
+            reputationAmountEl.textContent = gameState.reputation;
+
+            // Update bee counter with total population from all hives
+            try {
+                computeBeePopulation();
+                if (beeCountEl) {
+                    beeCountEl.textContent = gameState.bees.toLocaleString('es-CO');
+                }
+            } catch (e) { console.warn('[Juego] bee counter update error', e); }
+
+            // Market, maintenance and loans
+            try {
+                const marketPriceCOP = Math.round((gameState.baseUnitPrice || 12) * (gameState.marketMultiplier || 1) * COP_MULTIPLIER);
+                const maintenanceCOP = Math.round((gameState.maintenanceCost || 0) * COP_MULTIPLIER);
+                const loanBalance = (gameState.loans || []).reduce((s, l) => s + (l.balance || 0), 0);
+                const loanCOP = Math.round(loanBalance * COP_MULTIPLIER);
+                const mp = document.getElementById('market-price'); if (mp) mp.textContent = formatCOP(marketPriceCOP);
+                const mm = document.getElementById('maintenance-amount'); if (mm) mm.textContent = formatCOP(maintenanceCOP);
+                const lb = document.getElementById('loan-balance'); if (lb) lb.textContent = formatCOP(loanCOP);
+            } catch (e) { /* ignore */ }
+
+            // Actualizar nombres dinámicamente
+            if (apiaryTitleEl) apiaryTitleEl.textContent = gameState.apiaryName;
+            if (storeTitleEl) storeTitleEl.textContent = gameState.storeName;
+
+            // Actualizar estado de los botones
+            plantFlowersBtn.disabled = gameState.money < 50; // 50 base units
+            buyHiveBtn.disabled = gameState.money < 200;
+            buyApiaryBtn.disabled = gameState.money < 1000;
+
+            // Actualizar indicadores persistentes debajo del canvas
+            updateHiddenIndicatorsDisplay();
+            // Render hives UI
+            try { renderHivesUI(); } catch (e) { /* ignore */ }
+        }
+
+        // Render active loans list
+        function renderLoans() {
+            try {
+                const loanListEl = document.getElementById('loan-list');
+                const loanHistoryEl = document.getElementById('loan-history');
+
+                if (!loanListEl) return;
+
+                gameState.loans = gameState.loans || [];
+
+                if (gameState.loans.length === 0) {
+                    loanListEl.innerHTML = '<p style="color:#999;text-align:center;padding:10px;">No tienes préstamos activos</p>';
+                } else {
+                    loanListEl.innerHTML = gameState.loans.map((loan, idx) => `
+                        <div style="background:#f9f9f9;padding:10px;border-radius:8px;border-left:4px solid #ff9900;">
+                            <div style="font-weight:600;margin-bottom:4px;">Préstamo #${idx + 1}</div>
+                            <div style="font-size:0.85rem;color:#666;">
+                                <div>Saldo: ${formatCOP(loan.balance * COP_MULTIPLIER)}</div>
+                                <div>Pago mensual: ${formatCOP(loan.monthlyPayment * COP_MULTIPLIER)}</div>
+                                <div>Meses restantes: ${loan.remainingMonths}</div>
+                                <div>Interés: ${(loan.interest * 100).toFixed(1)}%</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                // Render loan history
+                if (loanHistoryEl) {
+                    gameState.loanHistory = gameState.loanHistory || [];
+                    if (gameState.loanHistory.length === 0) {
+                        loanHistoryEl.innerHTML = '<p style="color:#999;text-align:center;padding:10px;">Sin historial</p>';
+                    } else {
+                        loanHistoryEl.innerHTML = gameState.loanHistory.slice(-10).reverse().map(entry => {
+                            const date = new Date(entry.date).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' });
+                            const type = entry.type === 'request' ? 'Solicitud' : 'Pago';
+                            const color = entry.type === 'request' ? '#4a7c59' : '#ff9900';
+                            return `<div style="padding:6px;border-bottom:1px solid #eee;font-size:0.85rem;">
+                                <span style="color:${color};font-weight:600;">${type}</span> - 
+                                ${formatCOP(entry.amount * COP_MULTIPLIER)} - 
+                                <span style="color:#999;">${date}</span>
+                            </div>`;
+                        }).join('');
+                    }
+                }
+            } catch (err) {
+                console.warn('[Juego] renderLoans error:', err);
+            }
+        }
+
+        // Mostrar notificación
+        function showNotification(message, type = "info") {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Eliminar la notificación después de 3 segundos
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 500);
+            }, 3000);
+        }
+
+        // --- Guardado y carga de progreso (localStorage + export/import JSON) ---
+        function getSaveData() {
+            return {
+                // Save a shallow copy of gameState (includes season, seasonIndex, seasonModifiers, loans, loanHistory, etc.)
+                gameState: Object.assign({}, gameState, { lastUpdate: Date.now() }),
+                hives: hives.map(h => Object.assign({}, h)),
+                flowers: flowers.map(f => Object.assign({}, f)),
+                customers: gameState.customers.map(c => Object.assign({}, c))
+            };
+        }
+
+        function saveGameToLocalStorage(showNotif = false) {
+            try {
+                localStorage.setItem('apiarioSave', JSON.stringify(getSaveData()));
+                if (showNotif) showNotification('Progreso guardado localmente', 'success');
+            } catch (e) {
+                console.error(e);
+                if (showNotif) showNotification('Error al guardar progreso', 'error');
+            }
+        }
+
+        function loadSaveData(save) {
+            try {
+                if (save.gameState) {
+                    for (const k in save.gameState) {
+                        gameState[k] = save.gameState[k];
+                    }
+                }
+                // Load saved structures but limit visible hives to 6 for canvas
+                const savedHives = (save.hives || []).map(h => Object.assign({}, h));
+                hives = savedHives.slice(0, 6);
+                flowers = (save.flowers || []).map(f => Object.assign({}, f));
+                // Los árboles ya no se cargan en la versión actual (no se dibujan)
+                gameState.customers = (save.customers || []).map(c => Object.assign({}, c));
+
+                // Asegurarse de que los indicadores persistentes se actualicen
+                setTimeout(() => { refreshVisibleHives(); updateHiddenIndicatorsDisplay(); }, 30);
+
+                // Ensure saved hives have necessary defaults (in case older saves lack fields)
+                hives.forEach(hive => {
+                    hive.width = hive.width || 90;
+                    hive.height = hive.height || 70;
+                    hive.displayHoney = typeof hive.displayHoney === 'number' ? hive.displayHoney : (hive.honey || 0);
+
+                    hive.honey = typeof hive.honey === 'number' ? hive.honey : 0;
+                    hive.maxHoney = hive.maxHoney || 10;
+                    hive.color = hive.color || "#8B4513";
+                    hive.roofColor = hive.roofColor || "#A0522D";
+                    hive.doorColor = hive.doorColor || "#D2691E";
+                    hive.bees = typeof hive.bees === 'number' && hive.bees > 0 ? hive.bees : (Math.floor(Math.random() * 3) + 1);
+                });
+
+                // Rebuild bees from hives
+                bees = [];
+                gameState.bees = 0;
+                for (const hive of hives) {
+                    for (let i = 0; i < (hive.bees || 0); i++) {
+                        bees.push(createBee(hive));
+                        gameState.bees++;
+                    }
+                }
+
+                // Ensure season UI matches loaded state
+                try {
+                    const sb = document.getElementById('season-name');
+                    if (sb && gameState.season) sb.textContent = gameState.season;
+                    // Ensure seasonModifiers exist (fallback to defaults if missing)
+                    gameState.seasonModifiers = gameState.seasonModifiers || {
+                        'Primavera': { production: 1.05, customer: 1.0, price: 1.0 },
+                        'Verano': { production: 1.15, customer: 1.1, price: 1.05 },
+                        'Otoño': { production: 0.95, customer: 0.9, price: 0.95 },
+                        'Invierno': { production: 0.8, customer: 0.7, price: 0.9 }
+                    };
+                } catch (err) { /* ignore */ }
+
+                // layoutHives(); removed
+                // layoutFlowers(); removed
+                updateStats();
+                updateCustomersDisplay();
+                beeCountEl.textContent = gameState.bees;
+                showNotification('Progreso cargado', 'success');
+                return true;
+            } catch (e) {
+                console.error(e);
+                showNotification('Error al cargar progreso', 'error');
+                return false;
+            }
+        }
+
+        function loadGameFromLocalStorage() {
+            const raw = localStorage.getItem('apiarioSave');
+            if (!raw) {
+                return false;
+            }
+            try {
+                const save = JSON.parse(raw);
+                return loadSaveData(save);
+            } catch (e) {
+                console.error(e);
+                showNotification('Error al leer datos guardados', 'error');
+                return false;
+            }
+        }
+
+        function exportGameToFile() {
+            const data = JSON.stringify(getSaveData(), null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `apiario_save_${Date.now()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            showNotification('Archivo exportado', 'success');
+        }
+
+        function importGameFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                try {
+                    const save = JSON.parse(e.target.result);
+                    loadSaveData(save);
+                } catch (err) {
+                    console.error(err);
+                    showNotification('Archivo inválido', 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // ---------------------------------------------------------------
+
+        // draw removed
+
+        // layoutHives removed
+
+        // --- Mercado dinámico, estaciones y economía ---
+        function startMarketSimulation() {
+            try {
+                setInterval(() => {
+                    // Random walk
+                    const delta = (Math.random() - 0.5) * 0.18;
+                    gameState.marketMultiplier = Math.max(0.5, Math.min(2.5, (gameState.marketMultiplier || 1) + delta));
+                    // Small chance of a demand spike or crash event
+                    if (Math.random() < 0.07) {
+                        const spike = 1 + (Math.random() * 0.6 + 0.2) * (Math.random() < 0.5 ? 1 : -1);
+                        const prev = gameState.marketMultiplier;
+                        gameState.marketMultiplier = Math.max(0.5, Math.min(3, gameState.marketMultiplier * spike));
+                        showNotification('Evento de mercado: precios fluctuaron', 'info');
+                        // Revert gradually over next ticks
+                    }
+                    updateStats();
+                }, 10000);
+            } catch (e) { console.warn('[Juego] startMarketSimulation error', e); }
+        }
+
+        function startSeasonCycle() {
+            try {
+                setInterval(() => {
+                    gameState.seasonIndex = (gameState.seasonIndex + 1) % gameState.seasons.length;
+                    gameState.season = gameState.seasons[gameState.seasonIndex];
+                    showNotification('Cambio de estación: ' + gameState.season, 'info');
+                    // update season badge immediately
+                    try { const sb = document.getElementById('season-name'); if (sb) sb.textContent = gameState.season; } catch (e) { }
+                    updateStats();
+                }, 60000); // cada 60s cambia estación (acelera tiempo para demo)
+            } catch (e) { console.warn('[Juego] startSeasonCycle error', e); }
+        }
+
+        function computeLoanBalance() { return (gameState.loans || []).reduce((s, l) => s + (l.balance || 0), 0); }
+
+        function startEconomyTick() {
+            try {
+                setInterval(() => {
+                    // Representa un "mes" cada 15s
+                    // Restar mantenimiento
+                    const m = gameState.maintenanceCost || 0;
+                    if (m > 0) {
+                        gameState.money = Math.max(0, gameState.money - m);
+                    }
+
+                    // Procesar préstamos
+                    for (let i = gameState.loans.length - 1; i >= 0; i--) {
+                        const loan = gameState.loans[i];
+                        if (!loan || loan.balance <= 0) { gameState.loans.splice(i, 1); continue; }
+                        const pay = Math.min(loan.monthlyPayment, gameState.money);
+                        if (pay > 0) {
+                            gameState.money -= pay;
+                            loan.balance = Math.max(0, loan.balance - pay);
+                            loan.remainingMonths = Math.max(0, loan.remainingMonths - 1);
+                        } else {
+                            // No hay dinero: penalizar con interés pequeño
+                            loan.balance += loan.balance * 0.02; // 2% penalty
+                        }
+                        if (loan.balance <= 0 || loan.remainingMonths <= 0) {
+                            gameState.loans.splice(i, 1);
+                            showNotification('Préstamo pagado', 'success');
+                        }
+                    }
+
+                    updateStats();
+                }, 15000);
+            } catch (e) { console.warn('[Juego] startEconomyTick error', e); }
+        }
+
+        function takeLoan(units, months = 12, interest = 0.12) {
+            try {
+                const total = Math.ceil(units * (1 + interest));
+                const monthly = Math.ceil(total / months);
+                gameState.loans.push({ balance: total, monthlyPayment: monthly, remainingMonths: months, interest: interest });
+                gameState.money += units; // immediate credit
+                // Add to history
+                gameState.loanHistory = gameState.loanHistory || [];
+                gameState.loanHistory.push({ type: 'take', units, total, months, interest, at: Date.now() });
+                showNotification('Préstamo concedido: ' + formatCOP(units * COP_MULTIPLIER), 'success');
+                updateStats();
+            } catch (e) { console.error(e); }
+        }
+
+        function repayAnyLoan(amountUnits) {
+            try {
+                let amount = amountUnits;
+                for (let i = 0; i < gameState.loans.length && amount > 0; i++) {
+                    const loan = gameState.loans[i];
+                    const take = Math.min(amount, loan.balance);
+                    loan.balance -= take;
+                    amount -= take;
+                    if (loan.balance <= 0) {
+                        showNotification('Préstamo liquidado', 'success');
+                        gameState.loanHistory = gameState.loanHistory || [];
+                        gameState.loanHistory.push({ type: 'repaid', amount: take, at: Date.now() });
+                    }
+                }
+                updateStats();
+            } catch (e) { console.error(e); }
+        }
+
+        // Render loan list and history inside loan modal
+        function renderLoanList() {
+            try {
+                const listEl = document.getElementById('loan-list');
+                const historyEl = document.getElementById('loan-history');
+                if (listEl) {
+                    listEl.innerHTML = '';
+                    if (!gameState.loans || gameState.loans.length === 0) {
+                        listEl.innerHTML = '<div style="padding:6px;color:#666;">No hay préstamos activos.</div>';
+                    } else {
+                        gameState.loans.forEach((loan, idx) => {
+                            const el = document.createElement('div');
+                            el.style.display = 'flex';
+                            el.style.justifyContent = 'space-between';
+                            el.style.alignItems = 'center';
+                            el.style.padding = '8px';
+                            el.style.background = '#fff';
+                            el.style.border = '1px solid rgba(0,0,0,0.04)';
+                            el.style.borderRadius = '6px';
+                            el.innerHTML = `
+                                <div style="flex:1">
+                                    <div><strong>Saldo:</strong> ${formatCOP(Math.round((loan.balance || 0) * COP_MULTIPLIER))}</div>
+                                    <div style="font-size:0.85rem;color:#666">Cuota: ${formatCOP(Math.round((loan.monthlyPayment || 0) * COP_MULTIPLIER))} · Meses restantes: ${loan.remainingMonths || 0} · Interés: ${(loan.interest || 0) * 100}%</div>
+                                </div>
+                                <div style="margin-left:8px;display:flex;gap:6px;align-items:center;">
+                                    <button class="btn" data-loan-pay-index="${idx}">Pagar cuota</button>
+                                    <button class="btn" data-loan-schedule-index="${idx}">Calendario</button>
+                                </div>
+                                <div id="loan-schedule-${idx}" style="width:100%;display:none;margin-top:8px;padding:8px;background:#fafafa;border-radius:6px;border:1px solid rgba(0,0,0,0.03);"></div>
+                            `;
+                            listEl.appendChild(el);
+                        });
+                    }
+                }
+                if (historyEl) {
+                    const hist = (gameState.loanHistory || []).slice().reverse();
+                    if (hist.length === 0) {
+                        historyEl.innerHTML = '<div style="padding:6px;color:#666;">Sin historial de préstamos.</div>';
+                    } else {
+                        historyEl.innerHTML = hist.map(h => {
+                            const date = new Date(h.at).toLocaleString();
+                            if (h.type === 'take') return `<div style="padding:6px;border-bottom:1px solid rgba(0,0,0,0.02)">Préstamo: ${formatCOP(h.units * COP_MULTIPLIER)} · ${h.months} meses · ${(h.interest * 100).toFixed(1)}% · ${date}</div>`;
+                            return `<div style="padding:6px;border-bottom:1px solid rgba(0,0,0,0.02)">Pago: ${formatCOP(h.amount * COP_MULTIPLIER)} · ${date}</div>`;
+                        }).join('');
+                    }
+                }
+                // attach pay handlers
+                const payButtons = document.querySelectorAll('#loan-list button[data-loan-pay-index]');
+                payButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const idx = parseInt(btn.getAttribute('data-loan-pay-index'), 10);
+                        const loan = gameState.loans[idx];
+                        if (!loan) return;
+                        const pay = Math.min(loan.monthlyPayment || 0, gameState.money);
+                        if (pay <= 0) { showNotification('No tienes dinero para pagar la cuota', 'error'); return; }
+                        gameState.money -= pay;
+                        loan.balance = Math.max(0, loan.balance - pay);
+                        loan.remainingMonths = Math.max(0, (loan.remainingMonths || 0) - 1);
+                        gameState.loanHistory = gameState.loanHistory || [];
+                        gameState.loanHistory.push({ type: 'repaid', amount: pay, at: Date.now() });
+                        if (loan.balance <= 0 || loan.remainingMonths <= 0) {
+                            gameState.loans.splice(idx, 1);
+                            showNotification('Préstamo pagado', 'success');
+                        }
+                        renderLoanList();
+                        updateStats();
+                    });
+                });
+                // attach schedule handlers
+                const schedButtons = document.querySelectorAll('#loan-list button[data-loan-schedule-index]');
+                schedButtons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        try {
+                            const idx = parseInt(btn.getAttribute('data-loan-schedule-index'), 10);
+                            const loan = gameState.loans[idx];
+                            const container = document.getElementById(`loan-schedule-${idx}`);
+                            if (!loan || !container) return;
+                            if (container.innerHTML.trim() === '') {
+                                // build amortization-like schedule (simple, since loan already computed)
+                                const rows = [];
+                                let bal = loan.balance;
+                                const pay = loan.monthlyPayment || 0;
+                                const months = loan.remainingMonths || 0;
+                                rows.push('<div style="display:flex;gap:8px;font-weight:700;padding-bottom:6px;border-bottom:1px solid rgba(0,0,0,0.04)"><div style="width:60px">Mes</div><div style="flex:1">Pago</div><div style="width:120px">Saldo después</div></div>');
+                                for (let m = 1; m <= months; m++) {
+                                    const after = Math.max(0, bal - pay);
+                                    rows.push(`<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.02)"><div style="width:60px">${m}</div><div style="flex:1">${formatCOP(Math.round(pay * COP_MULTIPLIER))}</div><div style="width:120px">${formatCOP(Math.round(after * COP_MULTIPLIER))}</div></div>`);
+                                    bal = after;
+                                }
+                                container.innerHTML = rows.join('');
+                                container.style.display = 'block';
+                            } else {
+                                container.style.display = container.style.display === 'none' ? 'block' : 'none';
+                            }
+                        } catch (err) { console.warn('[Juego] schedule handler error', err); }
+                    });
+                });
+            } catch (err) { console.warn('[Juego] renderLoanList error', err); }
+        }
+
+        // Loan modal handlers
+        function openLoanModal(mode) {
+            try {
+                const modal = document.getElementById('loan-modal');
+                if (!modal) return;
+                modal.classList.remove('hidden');
+                const title = document.getElementById('loan-modal-title');
+                if (title) title.textContent = mode === 'request' ? 'Solicitar Préstamo' : 'Pagar Préstamo';
+                // show/hide sections
+                const req = document.getElementById('loan-request-section');
+                const pay = document.getElementById('loan-pay-section');
+                if (req) req.style.display = mode === 'request' ? 'block' : 'none';
+                if (pay) pay.style.display = mode === 'pay' ? 'block' : 'none';
+                try { renderLoanList(); } catch (e) { }
+            } catch (e) { console.warn('[Juego] openLoanModal error', e); }
+        }
+
+        function closeLoanModal() { try { const m = document.getElementById('loan-modal'); if (m) m.classList.add('hidden'); } catch (e) { } }
+
+        // Season modal: open/close and populate content based on gameState.season
+        function openSeasonModal() {
+            try {
+                const modal = document.getElementById('season-modal');
+                const content = document.getElementById('season-modal-content');
+                const title = document.getElementById('season-modal-title');
+                if (!modal || !content || !title) return;
+                // Normalize season name from gameState or DOM
+                let s = (gameState.season || '').toString();
+                if (!s) {
+                    const sb = document.getElementById('season-name');
+                    s = (sb && sb.textContent) ? sb.textContent : '';
+                }
+                s = (s || 'Primavera').toString();
+                // Try to find the canonical season name from gameState.seasons
+                if (Array.isArray(gameState.seasons)) {
+                    const match = gameState.seasons.find(x => x.toString().toLowerCase() === s.toLowerCase());
+                    if (match) s = match;
+                }
+                title.textContent = `Estación: ${s}`;
+                const mods = (gameState.seasonModifiers && gameState.seasonModifiers[s]) || { production: 1, customer: 1, price: 1 };
+                let desc = '';
+                switch (s) {
+                    case 'Primavera': desc = 'Primavera suele aumentar la actividad: más flores, recuperación de la población y producción ligeramente superior.'; break;
+                    case 'Verano': desc = 'Verano: máximo rendimiento — alta producción y mayor demanda. Ideal para vender y plantar más.'; break;
+                    case 'Otoño': desc = 'Otoño: producción empieza a bajar; la demanda disminuye. Enfócate en almacenar miel.'; break;
+                    case 'Invierno': desc = 'Invierno: actividad reducida — menos flores y menor producción. Reduce costos y cuida colmenas.'; break;
+                    default: desc = '';
+                }
+                content.innerHTML = `
+                    <div><strong>Comportamiento:</strong> ${desc}</div>
+                    <div style="margin-top:8px;"><strong>Modificadores:</strong></div>
+                    <ul style="margin-top:6px;padding-left:18px;color:#444;">
+                        <li>Producción: x${mods.production.toFixed(2)}</li>
+                        <li>Clientes/demanda: x${mods.customer.toFixed(2)}</li>
+                        <li>Precio: x${mods.price.toFixed(2)}</li>
+                    </ul>
+                    <div style="margin-top:8px;color:#666;font-size:0.95rem">Consejo: adapta tu estrategia según la estación. Por ejemplo, en ${s} ${s === 'Invierno' ? 'revisa mantenimiento y reduce gastos.' : 'incrementa ventas y plantaciones si es temporada alta.'}</div>
+                `;
+                modal.classList.remove('hidden');
+            } catch (err) { console.warn('[Juego] openSeasonModal error', err); }
+        }
+
+        function closeSeasonModal() { try { const m = document.getElementById('season-modal'); if (m) m.classList.add('hidden'); } catch (e) { } }
+
+        // Bind loan modal submit handlers
+        try {
+            document.addEventListener('DOMContentLoaded', () => {
+                const reqBtn = document.getElementById('loan-request-submit');
+                const payBtn = document.getElementById('loan-pay-submit');
+                const closeBtn = document.getElementById('loan-modal-close');
+                if (reqBtn) reqBtn.addEventListener('click', () => {
+                    const amt = parseInt(document.getElementById('loan-amount-input').value || '0', 10);
+                    const months = parseInt(document.getElementById('loan-months-input').value || '12', 10);
+                    const interest = parseFloat(document.getElementById('loan-interest-input').value || '0.12');
+                    if (!Number.isFinite(amt) || amt <= 0) { showNotification('Monto inválido', 'error'); return; }
+                    takeLoan(amt, months, interest);
+                    closeLoanModal();
+                });
+                if (payBtn) payBtn.addEventListener('click', () => {
+                    const amt = parseInt(document.getElementById('loan-pay-amount').value || '0', 10);
+                    if (!Number.isFinite(amt) || amt <= 0) { showNotification('Monto inválido', 'error'); return; }
+                    if (gameState.money < amt) { showNotification('No tienes suficiente dinero', 'error'); return; }
+                    gameState.money -= amt;
+                    repayAnyLoan(amt);
+                    closeLoanModal();
+                });
+                if (closeBtn) closeBtn.addEventListener('click', closeLoanModal);
+                // Ensure loan list renders when opening modal
+                const loanModalEl = document.getElementById('loan-modal');
+                if (loanModalEl) {
+                    const observer = new MutationObserver(() => { try { renderLoanList(); } catch (e) { } });
+                    observer.observe(loanModalEl, { attributes: true, attributeFilter: ['class'] });
+                }
+                // Bind season badge to open season modal
+                try {
+                    const seasonBadge = document.getElementById('season-badge');
+                    if (seasonBadge) seasonBadge.addEventListener('click', openSeasonModal);
+                } catch (e) { console.warn('[Juego] season badge bind error', e); }
+            });
+        } catch (e) { console.warn('[Juego] loan modal bind error', e); }
+
+        // Render visible hives in the UI (max 5)
+        function renderHivesUI() {
+            try {
+                const container = document.getElementById('hives-container');
+                if (!container) return;
+                container.innerHTML = '';
+                const visible = Math.min(hives.length, 5);
+                for (let i = 0; i < visible; i++) {
+                    const h = hives[i];
+                    const pct = Math.round(((h.displayHoney || h.honey || 0) / (h.maxHoney || 1)) * 100);
+                    const prod = (lastHiveProduction * (h.prodFactor || 1)).toFixed(2);
+                    const card = document.createElement('div');
+                    card.className = 'hive-card';
+                    card.setAttribute('data-index', String(i));
+                    card.setAttribute('role', 'button');
+                    card.setAttribute('tabindex', '0');
+                    card.innerHTML = `
+                                <h4>Colmena ${i + 1}</h4>
+                                <div>Abejas: <strong>${(h.baseBeeCount || 0).toLocaleString()}</strong></div>
+                                <div>Producción (kg/s): <strong>${prod}</strong></div>
+                                <div>Nivel miel: <strong>${(h.displayHoney || h.honey || 0).toFixed(1)} / ${h.maxHoney}</strong></div>
+                                <div class="hive-progress"><i style="width:${pct}%;"></i></div>
+                            `;
+                    // Open hive detail on click or Enter key
+                    card.addEventListener('click', () => openHiveDetail(i));
+                    card.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openHiveDetail(i); } });
+                    container.appendChild(card);
+                }
+                // If there are hidden hives, show a compact indicator
+                const hidden = Math.max(0, (gameState.hives || 0) - visible);
+                if (hidden > 0) {
+                    const more = document.createElement('div');
+                    more.className = 'hive-card';
+                    more.innerHTML = `<h4>+${hidden} ocultas</h4><div>Producción total aprox.: <strong>${(lastHiveProduction * (gameState.hives || 0)).toFixed(2)} kg/s</strong></div>`;
+                    container.appendChild(more);
+                }
+            } catch (err) { console.warn('[Juego] renderHivesUI error', err); }
+        }
+
+        // Hive detail modal handlers
+        function openHiveDetail(index) {
+            try {
+                const modal = document.getElementById('hive-modal');
+                const title = document.getElementById('hive-modal-title');
+                const content = document.getElementById('hive-modal-content');
+                if (!modal || !content) return;
+                const i = parseInt(index, 10);
+                const hive = hives[i];
+                if (!hive) return;
+                title.textContent = `Colmena ${i + 1}`;
+                const upgradeCost = 120; // units
+                content.innerHTML = `
+                        <div><strong>Abejas (estimadas):</strong> ${(hive.baseBeeCount || 0).toLocaleString()}</div>
+                        <div><strong>Factor producción:</strong> ${((hive.prodFactor || 1) * 100).toFixed(0)}%</div>
+                        <div><strong>Producción aprox. (kg/s):</strong> ${(lastHiveProduction * (hive.prodFactor || 1)).toFixed(3)}</div>
+                        <div><strong>Miel en colmena:</strong> ${(hive.honey || 0).toFixed(2)} / ${hive.maxHoney} kg</div>
+                        <div style="margin-top:8px;color:#666;font-size:0.9rem;">Índice: ${i + 1}</div>
+                        <div style="margin-top:12px;display:flex;gap:8px;align-items:center;">
+                            <button id="hive-upgrade-btn" class="btn">Mejorar colmena (${formatCOP(upgradeCost * COP_MULTIPLIER)})</button>
+                        </div>
+                        <div id="hive-upgrade-msg" style="margin-top:8px;color:#666;font-size:0.9rem;display:none;"></div>
+                    `;
+                modal.classList.remove('hidden');
+                // bind collect button
+                const collectBtn = document.getElementById('hive-collect-btn');
+                if (collectBtn) {
+                    collectBtn.onclick = () => { collectSingleHive(i); };
+                }
+                const closeBtn = document.getElementById('hive-close-btn'); if (closeBtn) closeBtn.onclick = () => closeHiveDetail();
+                // bind upgrade button
+                const upgradeBtn = document.getElementById('hive-upgrade-btn');
+                if (upgradeBtn) {
+                    upgradeBtn.onclick = () => {
+                        try {
+                            if (gameState.money < upgradeCost) { showNotification('No tienes dinero para mejorar esta colmena', 'error'); return; }
+                            gameState.money -= upgradeCost;
+                            hive.prodFactor = (hive.prodFactor || 1) + 0.15; // boost production factor
+                            hive.baseBeeCount = Math.floor((hive.baseBeeCount || 30000) + 5000);
+                            updateStats();
+                            showNotification('Colmena mejorada: +15% producción', 'success');
+                            const msg = document.getElementById('hive-upgrade-msg'); if (msg) { msg.style.display = 'block'; msg.textContent = 'Mejora aplicada.'; }
+                            saveGameToLocalStorage(false);
+                        } catch (err) { console.warn('[Juego] hive upgrade error', err); }
+                    };
+                }
+            } catch (err) { console.warn('[Juego] openHiveDetail error', err); }
+        }
+
+        function closeHiveDetail() { try { const m = document.getElementById('hive-modal'); if (m) m.classList.add('hidden'); } catch (e) { } }
+
+        function collectSingleHive(index) {
+            try {
+                const i = parseInt(index, 10);
+                const hive = hives[i];
+                if (!hive) return;
+                if ((hive.honey || 0) <= 0) { showNotification('Esta colmena no tiene miel para recolectar', 'info'); return; }
+                const amount = hive.honey;
+                hive.honey = 0;
+                gameState.honey = (gameState.honey || 0) + amount;
+                updateStats();
+                showNotification(`Recolectaste ${amount.toFixed(1)} kg de la colmena ${i + 1}`, 'success');
+                saveGameToLocalStorage(false);
+                // refresh modal content
+                try { openHiveDetail(i); } catch (e) { }
+            } catch (err) { console.warn('[Juego] collectSingleHive error', err); }
+        }
+
+        // computeVisibleHiveCapacity removed
+
+        // Ajustar array `hives` para que su longitud sea la cantidad visible adecuada.
+        // Ajustar array `hives` para coincidir con gameState.hives
+        function refreshVisibleHives() {
+            try {
+                const desired = gameState.hives || 0;
+
+                if (hives.length > desired) {
+                    // Remover colmenas extra
+                    hives.splice(desired);
+                } else if (hives.length < desired) {
+                    const toAdd = desired - hives.length;
+                    for (let i = 0; i < toAdd; i++) {
+                        hives.push({
+                            id: Date.now() + i,
+                            honey: 0,
+                            maxHoney: 10 + (Math.floor((gameState.hives - 1) / 5) * 2), // Increase max honey slightly with more hives
+                            baseBeeCount: Math.floor(30000 + Math.random() * 20000),
+                            prodFactor: 0.6 + Math.random() * 0.4
+                        });
+                    }
+                }
+
+                renderHivesCards();
+            } catch (e) { console.warn('[Juego] refreshVisibleHives error', e); }
+        }
+
+        // Actualizar la lógica del juego
+        function update() {
+            const now = Date.now();
+            const deltaTime = (now - gameState.lastUpdate) / 1000; // en segundos
+            gameState.lastUpdate = now;
+
+            // Calcular producción de miel (más lenta y con variabilidad)
+            let productionRate = gameState.honeyProductionRate;
+
+            // Aumentar producción por plantas
+            productionRate += gameState.plants * gameState.plantBoost;
+
+            // Aumentar producción por mejoras
+            if (gameState.upgrades.includes(1)) { // Abejas Reinas
+                productionRate *= availableUpgrades.find(u => u.id === 1).value;
+            }
+
+            // Aplicar modificador de estación
+            const seasonProd = (gameState.seasonModifiers && gameState.seasonModifiers[gameState.season] && gameState.seasonModifiers[gameState.season].production) || 1;
+            productionRate *= seasonProd;
+
+            // Hacer la producción global un poco más lenta
+            const GLOBAL_SLOW_FACTOR = 0.6; // reduce la velocidad de generación (ajustable)
+            const effectivePerHive = productionRate * GLOBAL_SLOW_FACTOR;
+
+            // Guardar producción por colmena por segundo para mostrar en UI (valor aproximado)
+            lastHiveProduction = effectivePerHive; // kg por colmena por segundo (aprox.)
+
+            const totalProduction = effectivePerHive * gameState.hives * deltaTime;
+            let remaining = totalProduction;
+
+            // Distribuir producción entre colmenas visibles de forma aleatoria y más gradual
+            if (hives.length > 0 && remaining > 0) {
+                // Intentar distribuir en pasos pequeños para que varias colmenas se llenen aleatoriamente
+                let attempts = 0;
+                while (remaining > 0.001 && attempts < 200) {
+                    attempts++;
+                    const candidates = hives.filter(h => h.honey < h.maxHoney);
+                    if (candidates.length === 0) break;
+                    const hive = candidates[Math.floor(Math.random() * candidates.length)];
+                    const canAdd = hive.maxHoney - hive.honey;
+                    // añadir una fracción aleatoria más pequeña (para hacerlo más lento)
+                    // y aplicar factor individual de producción por colmena
+                    const baseFrac = 0.02 + Math.random() * 0.06; // 2% - 8% del remaining
+                    const perHiveModifier = (hive.prodFactor || 0.8) * (0.7 + Math.random() * 0.6); // variabilidad adicional
+                    const add = Math.min(canAdd, Math.max(0.005, remaining * baseFrac * perHiveModifier));
+                    hive.honey = Math.min(hive.maxHoney, hive.honey + add);
+                    remaining -= add;
+                }
+            }
+
+            // Si queda producción y no hay espacio en colmenas visibles, agregar a balance global
+            if (remaining > 0.001) {
+                gameState.honey += remaining;
+            }
+
+            // Actualizar clientes
+            gameState.customers.forEach(customer => {
+                customer.timeLeft -= deltaTime;
+                if (customer.timeLeft <= 0) {
+                    // Eliminar cliente si se acaba el tiempo
+                    const index = gameState.customers.indexOf(customer);
+                    if (index !== -1) {
+                        gameState.customers.splice(index, 1);
+                        gameState.reputation = Math.max(0, gameState.reputation - 5); // perder reputación
+                        showNotification(`${customer.name} se cansó de esperar (reputación -5)`, "error");
+                        updateStats();
+                        // Generar reemplazo más tarde (espera más)
+                        setTimeout(generateCustomer, 2000 + Math.random() * 6000);
+                    }
+                }
+            });
+
+            // Actualizar abejas
+            bees.forEach(bee => {
+                // Mover abeja hacia su objetivo
+                const dx = bee.targetX - bee.x;
+                const dy = bee.targetY - bee.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance > 1) {
+                    bee.x += (dx / distance) * bee.speed;
+                    bee.y += (dy / distance) * bee.speed;
+                    bee.isFlying = true;
+                } else {
+                    bee.isFlying = false;
+
+                    // Si la abeja está en una flor, recoger polen
+                    if (bee.flower && !bee.hasPollen) {
+                        bee.hasPollen = true;
+                        bee.targetX = bee.hive.x + bee.hive.width / 2;
+                        bee.targetY = bee.hive.y + bee.hive.height / 2;
+                        // Al volver a la colmena, añadir un poco de miel a esa colmena
+                        bee.hive.honey = Math.min(bee.hive.maxHoney, bee.hive.honey + 0.05 * (bee.hive.bees || 1));
+                    }
+
+                    // Si la abeja está en la colmena, soltar polen y buscar nueva flor
+                    if (!bee.flower || bee.hasPollen) {
+                        bee.hasPollen = false;
+                        bee.flower = flowers.length > 0 ? flowers[Math.floor(Math.random() * flowers.length)] : null;
+
+                        if (bee.flower) {
+                            bee.targetX = bee.flower.x + Math.sin(bee.flower.sway) * 5;
+                            bee.targetY = bee.flower.y - bee.flower.stemHeight;
+                        } else {
+                            // Volar aleatoriamente si no hay flores
+                            bee.targetX = bee.hive.x + (Math.random() * 200 - 100);
+                            bee.targetY = bee.hive.y + (Math.random() * 200 - 100);
+                        }
+                    }
+                }
+            });
+
+            // Animar los valores mostrados de miel en cada colmena para que vayan de 0→honey suavemente
+            try {
+                hives.forEach(h => {
+                    if (typeof h.displayHoney !== 'number') h.displayHoney = h.honey || 0;
+                    // Lerp towards real value, faster when deltaTime larger
+                    h.displayHoney += (h.honey - h.displayHoney) * Math.max(0.06, Math.min(1, deltaTime * 6));
+                });
+            } catch (err) { console.warn('[Juego] animate displayHoney error', err); }
+
+            // Actualizar burbujas flotantes
+            for (let i = floatingBubbles.length - 1; i >= 0; i--) {
+                const b = floatingBubbles[i];
+                b.y -= b.vy * deltaTime;
+                b.ttl -= deltaTime * 1000;
+                b.opacity = Math.max(0, Math.min(1, b.ttl / 3000));
+                if (b.ttl <= 0 || b.opacity <= 0) floatingBubbles.splice(i, 1);
+            }
+
+            // Auto-recolectar si más de la mitad de las colmenas visibles están llenas (con cooldown)
+            const fullCount = hives.filter(h => h.honey >= h.maxHoney).length;
+            if (hives.length > 0 && fullCount > hives.length / 2) {
+                if (Date.now() - lastAutoCollectTime > 5000) {
+                    lastAutoCollectTime = Date.now();
+                    collectHoney();
+                    showNotification("¡Muchas colmenas llenas! Recolectando automáticamente...", "success");
+                }
+            }
+
+            // Actualizar pantalla de clientes cada segundo
+            if (Math.floor(now / 1000) !== Math.floor((now - deltaTime * 1000) / 1000)) {
+                updateCustomersDisplay();
+            }
+        }
+
+        // Game loop removed
+
+        // Recolectar miel de todas las colmenas
+        function collectHoney() {
+            let totalHoney = 0;
+
+            hives.forEach(hive => {
+                if (hive.honey > 0) {
+                    // Aplicar mejora de recolección si está disponible
+                    let collectionMultiplier = 1;
+                    if (gameState.upgrades.includes(2)) { // Equipo Mejorado
+                        collectionMultiplier = availableUpgrades.find(u => u.id === 2).value;
+                    }
+
+                    totalHoney += hive.honey * collectionMultiplier;
+                    hive.honey = 0;
+                }
+            });
+
+            if (totalHoney > 0) {
+                gameState.honey += totalHoney;
+                updateStats();
+                showNotification(`¡Recogiste ${totalHoney.toFixed(1)} kg de miel!`, "success");
+                saveGameToLocalStorage(false);
+            } else {
+                showNotification("Las colmenas aún no tienen miel", "info");
+            }
+        }
+
+        // Sembrar plantas
+        function plantFlowers() {
+            if (gameState.money < 50) {
+                showNotification("No tienes suficiente dinero para sembrar plantas", "error");
+                return;
+            }
+
+            gameState.money -= 50;
+            gameState.plants++;
+
+            // Añadir flor al juego y distribuir según índice
+            flowers.push(createFlower(gameState.plants - 1));
+            layoutFlowers();
+
+            updateStats();
+            showNotification("¡Plantaste una nueva flor! Aumenta la producción de miel", "success");
+            saveGameToLocalStorage(false);
+            // Actualizar indicador de plantas y animarlo
+            updateHiddenIndicatorsDisplay();
+            animateIndicator('plants');
+        }
+
+        // Comprar una colmena nueva
+        function buyHive() {
+            if (gameState.money < 200) {
+                showNotification("No tienes suficiente dinero para comprar una colmena", "error");
+                return;
+            }
+
+            gameState.money -= 200;
+            const prevTotal = gameState.hives || 0;
+            gameState.hives = prevTotal + 1;
+
+            // Recalcular cuántas colmenas deben mostrarse según pantalla
+            try { if (typeof refreshVisibleHives === 'function') refreshVisibleHives(); } catch (e) { }
+
+            const visibleCount = hives.length;
+            const hiddenCount = Math.max(0, gameState.hives - visibleCount);
+            if (hiddenCount > 0) createFloatingBubble(`+${hiddenCount}`);
+
+            // Actualizar indicador persistente debajo del canvas y animarlo
+            updateHiddenIndicatorsDisplay();
+            animateIndicator('hives');
+
+            // Llenar aleatoriamente algunas colmenas visibles según la compra
+            const added = gameState.hives - prevTotal;
+            // Programar los llenados uno por uno, más lentos y pequeños
+            scheduleHiveFills(added);
+
+            updateStats();
+            showNotification("¡Comprada una nueva colmena! (agregada al conteo)", "success");
+            saveGameToLocalStorage(false);
+
+            // Si más de la mitad de las colmenas visibles están llenas, recolectar automáticamente
+            const fullCount = hives.filter(h => h.honey >= h.maxHoney).length;
+            if (hives.length > 0 && fullCount > hives.length / 2) {
+                collectHoney();
+                showNotification("¡Muchas colmenas llenas! Recolectando automáticamente...", "success");
+            }
+        }
+
+        // Comprar un nuevo apiario
+        function buyApiary() {
+            if (gameState.money < 1000) {
+                showNotification("No tienes suficiente dinero para comprar un nuevo apiario", "error");
+                return;
+            }
+
+            gameState.money -= 1000;
+            const prevTotal = gameState.hives || 0;
+            gameState.apiaries++;
+            gameState.hives = prevTotal + 4;
+
+            // Recalcular cuántas colmenas deben mostrarse según pantalla
+            try { if (typeof refreshVisibleHives === 'function') refreshVisibleHives(); } catch (e) { }
+
+            const visibleCount = hives.length;
+            const hiddenCount = Math.max(0, gameState.hives - visibleCount);
+            if (hiddenCount > 0) createFloatingBubble(`+${hiddenCount}`);
+
+            // Actualizar indicador persistente debajo del canvas y animarlo
+            updateHiddenIndicatorsDisplay();
+            animateIndicator('hives');
+
+            // Llenar aleatoriamente algunas colmenas visibles según la compra
+            const added = gameState.hives - prevTotal;
+            scheduleHiveFills(added);
+
+            // Recalcular disposicion estética de colmenas
+            layoutHives();
+
+            updateStats();
+            showNotification("¡Nuevo apiario comprado! (colmenas agregadas al conteo, no visibles)", "success");
+            buyApiaryBtn.disabled = true; // Solo se puede comprar un apiario extra en esta versión
+            saveGameToLocalStorage(false);
+
+            const fullCount = hives.filter(h => h.honey >= h.maxHoney).length;
+            if (hives.length > 0 && fullCount > hives.length / 2) {
+                collectHoney();
+                showNotification("¡Muchas colmenas llenas! Recolectando automáticamente...", "success");
+            }
+        }
+
+        // Inicializar el juego
+        function initGame() {
+            console.log('[Juego] initGame start');
+            try {
+                // Configurar event listeners
+                collectHoneyBtn.addEventListener('click', collectHoney);
+                plantFlowersBtn.addEventListener('click', plantFlowers);
+                buyHiveBtn.addEventListener('click', buyHive);
+                buyApiaryBtn.addEventListener('click', buyApiary);
+
+                // Open/close Config modal
+                const configModal = document.getElementById('config-modal');
+                const configApiaryInput = document.getElementById('config-apiary-input');
+                const configStoreInput = document.getElementById('config-store-input');
+                const configSaveNamesBtn = document.getElementById('config-save-names');
+                const configSaveProgressBtn = document.getElementById('config-save-progress');
+                const configExportBtn = document.getElementById('config-export');
+                const configImportBtn = document.getElementById('config-import');
+
+                const configImportFile = document.getElementById('config-import-file');
+
+                function openConfigModal(focus) {
+                    try {
+                        if (configApiaryInput) configApiaryInput.value = gameState.apiaryName || '';
+                        if (configStoreInput) configStoreInput.value = gameState.storeName || '';
+                        if (configModal) configModal.classList.remove('hidden');
+                        try {
+                            setTimeout(() => {
+                                try {
+                                    if (focus === 'store' && configStoreInput && configStoreInput.isConnected) configStoreInput.focus();
+                                    else if (configApiaryInput && configApiaryInput.isConnected) configApiaryInput.focus();
+                                } catch (ferr) { console.warn('[Juego] no se pudo aplicar focus en modal', ferr); }
+                            }, 30);
+                        } catch (e) { console.warn('[Juego] fallo en timeout focus', e); }
+                    } catch (err) {
+                        console.error('[Juego] openConfigModal error:', err);
+                    }
+                }
+
+                // Instrucciones modal helpers
+                function openInstructionsModal() {
+                    try {
+                        const el = document.getElementById('instructions-modal');
+                        if (el) el.classList.remove('hidden');
+                    } catch (err) { console.warn('[Juego] openInstructionsModal error', err); }
+                }
+                function closeInstructionsModal() {
+                    try {
+                        const el = document.getElementById('instructions-modal');
+                        if (el) el.classList.add('hidden');
+                    } catch (err) { console.warn('[Juego] closeInstructionsModal error', err); }
+                }
+
+                // Event binding for config button to show instructions
+                const configShowInstructionsBtn = document.getElementById('config-show-instructions');
+                if (configShowInstructionsBtn) configShowInstructionsBtn.addEventListener('click', () => { try { closeConfigModal(); } catch (e) { }; openInstructionsModal(); });
+
+
+
+                // Show instructions at first run (persisted flag)
+                try {
+                    if (!localStorage.getItem('seenInstructions')) {
+                        openInstructionsModal();
+                        localStorage.setItem('seenInstructions', '1');
+                    }
+                } catch (err) { /* ignore localStorage errors */ }
+
+                function closeConfigModal() { try { if (configModal) configModal.classList.add('hidden'); } catch (e) { console.warn('[Juego] closeConfigModal error', e); } }
+
+                // --- Plant selection modal & data ---
+                const plantModal = document.getElementById('plant-modal');
+                const plantListEl = document.getElementById('plant-list');
+                const plantModalCloseBtn = document.getElementById('plant-modal-close');
+
+                const availablePlants = [
+                    { id: 1, name: 'Eucalipto (Eucalyptus spp.)', type: 'Árbol', production: 'Muy alta', points: 10, cost: 20 * 10 },
+                    { id: 2, name: 'Acacia (Acacia mangium)', type: 'Árbol', production: 'Muy alta', points: 9, cost: 20 * 9 },
+                    { id: 3, name: 'Campano (Samanea saman)', type: 'Árbol', production: 'Alta', points: 9, cost: 20 * 9 },
+                    { id: 4, name: 'Girasol (Helianthus annuus)', type: 'Herbácea', production: 'Alta', points: 8, cost: 20 * 8 },
+                    { id: 5, name: 'Café (Coffea arabica)', type: 'Arbusto', production: 'Alta', points: 8, cost: 20 * 8 },
+                    { id: 6, name: 'Mango (Mangifera indica)', type: 'Árbol', production: 'Media–Alta', points: 7, cost: 20 * 7 },
+                    { id: 7, name: 'Guayacán (Tabebuia spp.)', type: 'Árbol', production: 'Media–Alta', points: 7, cost: 20 * 7 },
+                    { id: 8, name: 'Ajónjolí / Sésamo (Sesamum indicum)', type: 'Herbácea', production: 'Media', points: 6, cost: 20 * 6 },
+                    { id: 9, name: 'Lantana (Lantana camara)', type: 'Arbusto', production: 'Media', points: 6, cost: 20 * 6 },
+                    { id: 10, name: 'Alfalfa (Medicago sativa)', type: 'Herbácea', production: 'Media', points: 6, cost: 20 * 6 },
+                    { id: 11, name: 'Trinitaria / Buganvilia (Bougainvillea spp.)', type: 'Arbusto', production: 'Baja', points: 5, cost: 20 * 5 },
+                    { id: 12, name: 'Botoncillo (Borreria spp.)', type: 'Silvestre', production: 'Baja', points: 5, cost: 20 * 5 },
+                    { id: 13, name: 'Escoba amarga (Sida spp.)', type: 'Silvestre', production: 'Baja', points: 4, cost: 20 * 4 },
+                    { id: 14, name: 'Rabo de gato (Achyranthes aspera)', type: 'Silvestre', production: 'Muy baja', points: 3, cost: 20 * 3 },
+                    { id: 15, name: 'Fríjol común (Phaseolus vulgaris)', type: 'Cultivo', production: 'Muy baja', points: 3, cost: 20 * 3 }
+                ];
+
+                function renderPlantOptions() {
+                    try {
+                        if (!plantListEl) return;
+                        plantListEl.innerHTML = availablePlants.map(p => `
+                            <div class="plant-card" data-plant-id="${p.id}">
+                                <div class="plant-name">${p.name}</div>
+                                <div class="plant-meta">${p.type} · Producción: ${p.production}</div>
+                                <div class="plant-meta">Puntos: <span class="plant-points">${p.points}</span></div>
+                                <div class="plant-cost">Costo: <strong>${formatCOP(p.cost)}</strong></div>
+                                <div class="plant-actions">
+                                    <button class="btn btn-small plant-buy" data-plant-id="${p.id}">Sembrar</button>
+                                </div>
+                            </div>
+                        `).join('');
+
+                        // Bind buy buttons and disable if not enough money
+                        document.querySelectorAll('.plant-buy').forEach(btn => {
+                            const id = parseInt(btn.getAttribute('data-plant-id'), 10);
+                            const p = availablePlants.find(x => x.id === id);
+                            if (!p) return;
+                            btn.disabled = gameState.money < p.cost;
+                            btn.addEventListener('click', () => purchasePlant(id));
+                        });
+                    } catch (err) { console.warn('[Juego] renderPlantOptions error', err); }
+                }
+
+                function openPlantModal() {
+                    try {
+                        if (plantModal) {
+                            plantModal.classList.remove('hidden');
+                            // hide back button on root plant modal
+                            const back = document.getElementById('plant-modal-back'); if (back) back.classList.add('hidden');
+                        }
+                        renderPlantOptions();
+                    } catch (err) { console.warn('[Juego] openPlantModal error', err); }
+                }
+                function closePlantModal() { try { if (plantModal) plantModal.classList.add('hidden'); } catch (e) { console.warn('[Juego] closePlantModal error', e); } }
+
+                if (plantModalCloseBtn) plantModalCloseBtn.addEventListener('click', () => closePlantModal());
+                const plantModalX = document.getElementById('plant-modal-x');
+                if (plantModalX) plantModalX.addEventListener('click', () => closePlantModal());
+
+                // NEW: bindings for new header-style buttons
+                const plantModalCloseTop = document.getElementById('plant-modal-close');
+                const plantModalBackTop = document.getElementById('plant-modal-back');
+                if (plantModalCloseTop) plantModalCloseTop.addEventListener('click', () => closePlantModal());
+                if (plantModalBackTop) plantModalBackTop.addEventListener('click', () => { /* no-op for now (no previous) */ });
+
+                // Plant purchase and planting (unchanged)
+                function purchasePlant(id) {
+                    try {
+                        const p = availablePlants.find(x => x.id === id);
+                        if (!p) return;
+                        if (gameState.money < p.cost) {
+                            showNotification('No tienes suficiente dinero para esa planta', 'error');
+                            renderPlantOptions();
+                            return;
+                        }
+                        gameState.money -= p.cost;
+                        gameState.plants++;
+                        // add species info to the flower object so saves keep it
+                        const f = createFlower(gameState.plants - 1);
+                        f.speciesId = p.id;
+                        f.speciesName = p.name;
+                        f.speciesPoints = p.points;
+                        f.speciesType = p.type;
+                        f.plantedAt = Date.now(); // Fecha de siembra
+                        flowers.push(f);
+                        layoutFlowers();
+
+                        // Increase plant boost based on points (1 punto = 0.01 plantBoost)
+                        const boostInc = p.points * 0.01;
+                        gameState.plantBoost = (gameState.plantBoost || 0) + boostInc;
+
+                        updateStats();
+                        showNotification(`Sembraste ${p.name} por ${formatCOP(p.cost)} (+${(boostInc * 100).toFixed(0)}% plantas)`, 'success');
+                        saveGameToLocalStorage(false);
+                        updateHiddenIndicatorsDisplay();
+                        animateIndicator('plants');
+                        closePlantModal();
+                    } catch (err) { console.error('[Juego] purchasePlant error', err); }
+                }
+
+                // Update plant button disabled state based on cheapest plant cost
+                function updatePlantButtonState() {
+                    try {
+                        const minCost = Math.min(...availablePlants.map(p => p.cost));
+                        if (plantFlowersBtn) plantFlowersBtn.disabled = gameState.money < minCost;
+                    } catch (err) { /* ignore */ }
+                }
+
+                // Wire plant button to open modal (instead of instant purchase)
+                if (plantFlowersBtn) {
+                    plantFlowersBtn.removeEventListener('click', plantFlowers);
+                    plantFlowersBtn.addEventListener('click', openPlantModal);
+                }
+
+                // Planted plants modal & details
+                const plantShowPlantedBtn = document.getElementById('plant-show-planted');
+                const plantedModal = document.getElementById('planted-modal');
+                const plantedListEl = document.getElementById('planted-list');
+                const plantedModalCloseBtn = document.getElementById('planted-modal-close');
+                const plantedModalX = document.getElementById('planted-modal-x');
+                const plantInfoModal = document.getElementById('plant-info-modal');
+                const plantInfoContent = document.getElementById('plant-info-content');
+                const plantInfoCloseBtn = document.getElementById('plant-info-modal-close');
+                const plantInfoX = document.getElementById('plant-info-modal-x');
+
+                function renderPlantedPlants() {
+                    try {
+                        if (!plantedListEl) return;
+                        if (!flowers || flowers.length === 0) {
+                            plantedListEl.innerHTML = '<div style="padding:10px;color:#666;">No hay plantas plantadas.</div>';
+                            return;
+                        }
+                        // Ordenar por fecha de siembra (más recientes primero)
+                        const list = flowers.map((f, idx) => ({ f, idx })).sort((a, b) => (b.f.plantedAt || 0) - (a.f.plantedAt || 0));
+                        plantedListEl.innerHTML = list.map(({ f, idx }) => {
+                            const species = availablePlants.find(p => p.id === f.speciesId) || {};
+                            const name = f.speciesName || species.name || 'Planta desconocida';
+                            const prod = species.production || (f.speciesPoints ? 'N/A' : 'N/A');
+                            const points = f.speciesPoints || species.points || '-';
+                            const dateStr = f.plantedAt ? new Date(f.plantedAt).toLocaleString() : 'Fecha desconocida';
+                            return `
+                                <div class="planted-item" data-index="${idx}">
+                                    <div class="pi-left">🌱</div>
+                                    <div class="pi-body">
+                                        <div class="pi-title"><strong>${name}</strong></div>
+                                        <div class="pi-meta">${species.type || f.speciesType || ''} · Producción: ${prod} · Puntos: ${points}</div>
+                                        <div style="font-size:0.85rem;color:#666;margin-top:6px;">Sembrada: ${dateStr}</div>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } catch (err) { console.warn('[Juego] renderPlantedPlants error', err); }
+                }
+
+                function openPlantedModal() { try { if (plantedModal) { plantedModal.classList.remove('hidden'); const back = document.getElementById('planted-modal-back'); if (back) back.classList.remove('hidden'); } renderPlantedPlants(); } catch (err) { console.warn('[Juego] openPlantedModal error', err); } }
+                function closePlantedModal() { try { if (plantedModal) plantedModal.classList.add('hidden'); } catch (e) { console.warn('[Juego] closePlantedModal error', e); } }
+
+                function openPlantInfo(idx) {
+                    try {
+                        const i = parseInt(idx, 10);
+                        if (Number.isNaN(i) || !flowers[i]) return;
+                        const f = flowers[i];
+                        const species = availablePlants.find(p => p.id === f.speciesId) || {};
+                        const name = f.speciesName || species.name || 'Planta desconocida';
+                        const points = f.speciesPoints || species.points || 0;
+                        const prod = species.production || 'N/A';
+                        const boost = (points * 0.01) * 100; // display percentage
+                        const html = `
+                            <div class="plant-info">
+                                <div><strong>${name}</strong></div>
+                                <div>Tipo: ${species.type || f.speciesType || 'N/A'}</div>
+                                <div>Producción: ${prod}</div>
+                                <div>Puntos: ${points}</div>
+                                <div>Contribución aproximada: +${boost.toFixed(0)}% plantBoost</div>
+                                <div>Índice: ${i + 1}</div>
+                            </div>
+                        `;
+                        if (plantInfoContent) plantInfoContent.innerHTML = html;
+                        try { closePlantedModal(); } catch (e) { }
+                        if (plantInfoModal) {
+                            const back = document.getElementById('plant-info-modal-back'); if (back) back.classList.remove('hidden');
+                            plantInfoModal.classList.remove('hidden');
+                        }
+                    } catch (err) { console.warn('[Juego] openPlantInfo error', err); }
+                }
+
+                function closePlantInfoModal() { try { if (plantInfoModal) plantInfoModal.classList.add('hidden'); } catch (e) { console.warn('[Juego] closePlantInfoModal error', e); } }
+
+                if (plantShowPlantedBtn) plantShowPlantedBtn.addEventListener('click', () => { try { closePlantModal(); } catch (e) { }; openPlantedModal(); });
+                if (plantedModalCloseBtn) plantedModalCloseBtn.addEventListener('click', closePlantedModal);
+                if (plantedModalX) plantedModalX.addEventListener('click', closePlantedModal);
+                if (plantInfoCloseBtn) plantInfoCloseBtn.addEventListener('click', closePlantInfoModal);
+                if (plantInfoX) plantInfoX.addEventListener('click', closePlantInfoModal);
+
+                // Back navigation: planted -> plant, plant-info -> planted
+                const plantedModalBackBtn = document.getElementById('planted-modal-back');
+                const plantInfoBackBtn = document.getElementById('plant-info-modal-back');
+                if (plantedModalBackBtn) plantedModalBackBtn.addEventListener('click', () => { try { closePlantedModal(); } catch (e) { }; openPlantModal(); });
+                if (plantInfoBackBtn) plantInfoBackBtn.addEventListener('click', () => { try { closePlantInfoModal(); } catch (e) { }; openPlantedModal(); });
+
+                if (plantedListEl) plantedListEl.addEventListener('click', (e) => {
+                    const item = e.target.closest('.planted-item');
+                    if (!item) return;
+                    const idx = item.getAttribute('data-index');
+                    openPlantInfo(idx);
+                });
+
+                // Tooltip helpers for modal header icon buttons (hover + long-press)
+                let modalTooltipEl = null;
+                function showModalTooltip(target, text) {
+                    try {
+                        hideModalTooltip();
+                        modalTooltipEl = document.createElement('div');
+                        modalTooltipEl.className = 'modal-tooltip';
+                        modalTooltipEl.textContent = text;
+                        document.body.appendChild(modalTooltipEl);
+                        const rect = target.getBoundingClientRect();
+                        // Allow layout to compute sizes
+                        requestAnimationFrame(() => {
+                            const tipW = modalTooltipEl.offsetWidth;
+                            const tipH = modalTooltipEl.offsetHeight;
+                            let left = rect.left + rect.width / 2 - tipW / 2;
+                            left = Math.max(6, Math.min(left, window.innerWidth - tipW - 6));
+                            let top = rect.top - tipH - 8;
+                            if (top < 6) top = rect.bottom + 8;
+                            modalTooltipEl.style.left = left + 'px';
+                            modalTooltipEl.style.top = top + 'px';
+                            modalTooltipEl.style.opacity = '1';
+                            modalTooltipEl.style.transform = 'translateY(0)';
+                        });
+                    } catch (err) { console.warn('[Juego] showModalTooltip error', err); }
+                }
+                function hideModalTooltip() {
+                    try {
+                        if (!modalTooltipEl) return;
+                        modalTooltipEl.style.opacity = '0';
+                        modalTooltipEl.style.transform = 'translateY(-6px)';
+                        setTimeout(() => { try { if (modalTooltipEl && modalTooltipEl.parentNode) modalTooltipEl.parentNode.removeChild(modalTooltipEl); modalTooltipEl = null; } catch (e) { } }, 180);
+                    } catch (err) { /* ignore */ }
+                }
+                function attachModalTooltip(btn, text) {
+                    try {
+                        if (!btn) return;
+                        btn.setAttribute('data-tooltip', text);
+                        btn.addEventListener('mouseenter', () => showModalTooltip(btn, text));
+                        btn.addEventListener('mouseleave', hideModalTooltip);
+
+                        // Long-press for touch devices
+                        let longTimer = null;
+                        const start = (ev) => { longTimer = setTimeout(() => showModalTooltip(btn, text), 500); };
+                        const stop = (ev) => { if (longTimer) { clearTimeout(longTimer); longTimer = null; } hideModalTooltip(); };
+                        btn.addEventListener('touchstart', start, { passive: true });
+                        btn.addEventListener('touchend', stop);
+                        btn.addEventListener('touchcancel', stop);
+                        // Also support mouse long-press (mousedown)
+                        btn.addEventListener('mousedown', start);
+                        btn.addEventListener('mouseup', stop);
+                        btn.addEventListener('mouseleave', stop);
+                    } catch (err) { console.warn('[Juego] attachModalTooltip error', err); }
+                }
+
+                // Attach tooltips to all header icon buttons using aria-label when available
+                try {
+                    document.querySelectorAll('.modal-btn').forEach(btn => {
+                        const label = btn.getAttribute('aria-label') || btn.textContent.trim();
+                        if (label) attachModalTooltip(btn, label);
+                    });
+                } catch (err) { /* ignore */ }
+
+                // Global handler: any header modal close button should hide its overlay
+                try {
+                    document.addEventListener('click', function (ev) {
+                        try {
+                            const t = ev.target;
+                            if (!t) return;
+                            if (t.classList && t.classList.contains('modal-close-btn')) {
+                                const overlay = t.closest('.modal-overlay');
+                                if (overlay) overlay.classList.add('hidden');
+                            }
+                        } catch (e) { /* ignore */ }
+                    });
+                } catch (e) { /* ignore */ }
+
+                // Ensure the plant modal button state updates when money changes
+                setInterval(updatePlantButtonState, 1200);
+
+
+
+                // Buttons to open modal
+                if (openConfigBtn) {
+                    openConfigBtn.addEventListener('click', () => openConfigModal());
+                } else { console.warn('[Juego] openConfigBtn no encontrado'); }
+
+                // Save names (sólo si los inputs existen)
+                if (configSaveNamesBtn && configApiaryInput && configStoreInput) {
+                    configSaveNamesBtn.addEventListener('click', function () {
+                        const a = configApiaryInput.value.trim();
+                        const s = configStoreInput.value.trim();
+                        if (!a || !s) { showNotification('Ingrese nombres válidos', 'error'); return; }
+                        gameState.apiaryName = a;
+                        gameState.storeName = s;
+                        updateStats();
+                        showNotification('Nombres actualizados', 'success');
+                        saveGameToLocalStorage(false);
+                        closeConfigModal();
+                    });
+                    configApiaryInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') configSaveNamesBtn.click(); if (e.key === 'Escape') closeConfigModal(); });
+                    configStoreInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') configSaveNamesBtn.click(); if (e.key === 'Escape') closeConfigModal(); });
+                } else {
+                    console.warn('[Juego] elementos de configuración para nombres faltan', { configSaveNamesBtn, configApiaryInput, configStoreInput });
+                }
+
+                // Save / Export / Import from modal (con comprobaciones)
+                if (configSaveProgressBtn) configSaveProgressBtn.addEventListener('click', function () { saveGameToLocalStorage(true); }); else console.warn('[Juego] configSaveProgressBtn no encontrado');
+                if (configExportBtn) configExportBtn.addEventListener('click', function () { exportGameToFile(); }); else console.warn('[Juego] configExportBtn no encontrado');
+                if (configImportBtn && configImportFile) {
+                    configImportBtn.addEventListener('click', function () { configImportFile.click(); });
+                    configImportFile.addEventListener('change', function () { if (this.files && this.files.length) { importGameFromFile(this.files[0]); } this.value = ''; closeConfigModal(); });
+                } else { console.warn('[Juego] configImportBtn o configImportFile no encontrados'); }
+
+                // Bind top close buttons for modals (close action uses header button)
+                const configModalCloseTopBtn = document.getElementById('config-modal-close-top');
+                if (configModalCloseTopBtn) configModalCloseTopBtn.addEventListener('click', closeConfigModal);
+                const instructionsModalCloseTopBtn = document.getElementById('instructions-modal-close-top');
+                if (instructionsModalCloseTopBtn) instructionsModalCloseTopBtn.addEventListener('click', closeInstructionsModal);
+
+                // New: open planted plants from config modal button
+                const configOpenPlantedBtn = document.getElementById('config-open-planted');
+                if (configOpenPlantedBtn) configOpenPlantedBtn.addEventListener('click', function () { try { closeConfigModal(); } catch (e) { }; openPlantedModal(); });
+
+                // Auto-load saved game if exists, otherwise initialize
+                const loaded = loadGameFromLocalStorage();
+                if (!loaded) {
+                    // Inicializar elementos y estado
+                    initGameElements();
+                }
+
+                // Lógica del Modal de Bienvenida
+                if (gameState.showWelcomeModal !== false) {
+                    const welcomeModal = document.getElementById('welcome-modal');
+                    if (welcomeModal) welcomeModal.classList.remove('hidden');
+                }
+
+                const welcomeModal = document.getElementById('welcome-modal');
+                const welcomeModalClose = document.getElementById('welcome-modal-close');
+                const welcomeModalBtn = document.getElementById('welcome-modal-btn');
+                const welcomeCheckbox = document.getElementById('welcome-checkbox');
+
+                const closeWelcome = () => {
+                    if (welcomeModal) welcomeModal.classList.add('hidden');
+                    if (welcomeCheckbox && welcomeCheckbox.checked) {
+                        gameState.showWelcomeModal = false;
+                        if (typeof saveGameToLocalStorage === 'function') {
+                            saveGameToLocalStorage(false);
+                        }
+                    }
+                };
+
+                if (welcomeModalClose) welcomeModalClose.addEventListener('click', closeWelcome);
+                if (welcomeModalBtn) welcomeModalBtn.addEventListener('click', closeWelcome);
+
+                // Asegurar que siempre haya intentos periódicos de generar clientes
+                generateCustomer(); // intento inicial
+                setInterval(() => {
+                    try { generateCustomer(); } catch (e) { console.warn('[Juego] generateCustomer periodic error', e); }
+                }, 8000);
+
+                updateStats();
+                updateUpgradesDisplay();
+
+                // Auto-save periódico
+                setInterval(saveGameToLocalStorage, 10000);
+
+                // Marcar juego como listo y asegurar layout/resize correcto
+                gameReady = true;
+                // resizeCanvas(); removed
+
+                // Start market, season and economy simulations
+                try { startMarketSimulation(); } catch (e) { console.warn('[Juego] startMarketSimulation error', e); }
+                try { startSeasonCycle(); } catch (e) { console.warn('[Juego] startSeasonCycle error', e); }
+                try { startEconomyTick(); } catch (e) { console.warn('[Juego] startEconomyTick error', e); }
+
+                // Bind loan modal buttons
+                try {
+                    const loanRequestSubmit = document.getElementById('loan-request-submit');
+                    const loanPaySubmit = document.getElementById('loan-pay-submit');
+                    const loanModalClose = document.getElementById('loan-modal-close');
+
+                    if (loanRequestSubmit) {
+                        loanRequestSubmit.addEventListener('click', () => {
+                            try {
+                                const amount = parseFloat(document.getElementById('loan-amount-input').value) || 0;
+                                const months = parseInt(document.getElementById('loan-months-input').value) || 0;
+                                const interest = parseFloat(document.getElementById('loan-interest-input').value) || 0;
+
+                                if (amount <= 0 || months <= 0 || interest < 0) {
+                                    showNotification('Por favor ingresa valores válidos para el préstamo', 'error');
+                                    return;
+                                }
+
+                                // Calculate monthly payment
+                                const monthlyInterest = interest / 12;
+                                const monthlyPayment = amount * (monthlyInterest * Math.pow(1 + monthlyInterest, months)) / (Math.pow(1 + monthlyInterest, months) - 1);
+
+                                // Add loan to gameState
+                                const loan = {
+                                    id: Date.now(),
+                                    principal: amount,
+                                    balance: amount,
+                                    monthlyPayment: monthlyPayment,
+                                    remainingMonths: months,
+                                    interest: interest
+                                };
+
+                                gameState.loans = gameState.loans || [];
+                                gameState.loans.push(loan);
+                                gameState.money += amount;
+
+                                // Add to loan history
+                                gameState.loanHistory = gameState.loanHistory || [];
+                                gameState.loanHistory.push({
+                                    date: new Date().toISOString(),
+                                    type: 'request',
+                                    amount: amount,
+                                    months: months,
+                                    interest: interest
+                                });
+
+                                showNotification(`Préstamo de ${formatCOP(amount * COP_MULTIPLIER)} aprobado!`, 'success');
+                                updateStats();
+                                renderLoans();
+                                saveGameToLocalStorage();
+
+                                // Clear inputs
+                                document.getElementById('loan-amount-input').value = '';
+                                document.getElementById('loan-months-input').value = '';
+                                document.getElementById('loan-interest-input').value = '';
+                            } catch (err) {
+                                console.error('[Juego] loan request error:', err);
+                                showNotification('Error al procesar el préstamo', 'error');
+                            }
+                        });
+                    }
+
+                    if (loanPaySubmit) {
+                        loanPaySubmit.addEventListener('click', () => {
+                            try {
+                                const payAmount = parseFloat(document.getElementById('loan-pay-amount').value) || 0;
+
+                                if (payAmount <= 0) {
+                                    showNotification('Ingresa un monto válido para pagar', 'error');
+                                    return;
+                                }
+
+                                if (payAmount > gameState.money) {
+                                    showNotification('No tienes suficiente dinero', 'error');
+                                    return;
+                                }
+
+                                gameState.loans = gameState.loans || [];
+                                if (gameState.loans.length === 0) {
+                                    showNotification('No tienes préstamos activos', 'error');
+                                    return;
+                                }
+
+                                // Pay towards the first loan
+                                const loan = gameState.loans[0];
+                                const actualPayment = Math.min(payAmount, loan.balance);
+
+                                loan.balance -= actualPayment;
+                                gameState.money -= actualPayment;
+
+                                // Add to loan history
+                                gameState.loanHistory = gameState.loanHistory || [];
+                                gameState.loanHistory.push({
+                                    date: new Date().toISOString(),
+                                    type: 'payment',
+                                    amount: actualPayment
+                                });
+
+                                // Remove loan if fully paid
+                                if (loan.balance <= 0) {
+                                    gameState.loans.shift();
+                                    showNotification('¡Préstamo pagado completamente!', 'success');
+                                } else {
+                                    showNotification(`Pago de ${formatCOP(actualPayment * COP_MULTIPLIER)} realizado`, 'success');
+                                }
+
+                                updateStats();
+                                renderLoans();
+                                saveGameToLocalStorage();
+
+                                // Clear input
+                                document.getElementById('loan-pay-amount').value = '';
+                            } catch (err) {
+                                console.error('[Juego] loan payment error:', err);
+                                showNotification('Error al procesar el pago', 'error');
+                            }
+                        });
+                    }
+
+                    if (loanModalClose) {
+                        loanModalClose.addEventListener('click', () => {
+                            const loanModal = document.getElementById('loan-modal');
+                            if (loanModal) loanModal.classList.add('hidden');
+                        });
+                    }
+                } catch (e) { console.warn('[Juego] loan buttons bind error', e); }
+
+                // Iniciar bucle del juego (Reemplazado por sistema de tarjetas)
+                renderHivesCards();
+
+                // Actualizar tarjetas periódicamente para mostrar progreso de miel
+                setInterval(() => {
+                    if (document.visibilityState === 'visible') {
+                        renderHivesCards();
+                    }
+                }, 2000);
+
+                // Lógica del juego (economía, producción, clientes) cada 100ms
+                setInterval(update, 100);
+
+                console.log('[Juego] initGame success (No Canvas Mode)');
+            } catch (err) {
+                console.error('[Juego] initGame error:', err);
+                try { showNotification('Error iniciando juego: ' + (err.message || err), 'error'); } catch (e) {/*ignore*/ }
+            }
+        }
+
+        // Ejecutar inicialización cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initGame);
+        } else {
+            initGame();
+        }
+    </script>
+</body>
+
+</html>
